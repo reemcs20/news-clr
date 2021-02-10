@@ -11,7 +11,7 @@ class Searcher:
     def performSearch(query, tld) -> list:
         """method to perform a search operation and returns a list of links"""
         try:
-            links = [] # a list to store links from google
+            links = []  # a list to store links from google
             results = search(query=query, num=5, stop=10, tld=tld)
             for link in results:
                 links.append(link)  # add links to list
@@ -36,6 +36,7 @@ class Searcher:
         :param rule: a string value that is needed to be in link
         :return bool: a state if the link contains rule or not"""
         return rule in link
+
 
 class RequestDispatcher:
     @staticmethod
@@ -130,7 +131,7 @@ class Aljazeera(Searcher):
         """Gather response links and store them into list"""
         results = self.performSearch(query=self.makeDorkSearch(query), tld='net')
         for newsLink in results:
-            if self.Ensure_Rules(newsLink, 'news') or self.Ensure_Rules(newsLink,'sport'):
+            if self.Ensure_Rules(newsLink, 'news') or self.Ensure_Rules(newsLink, 'sport'):
                 print("Rules matched==>", newsLink)
                 self.newsLinks.append(newsLink)
 
@@ -214,7 +215,6 @@ class BBC(Searcher):
             if self.Ensure_Rules(newsLink, 'bbc.com'):
                 print("Rules matched==>", newsLink)
                 self.newsLinks.append(newsLink)
-
 
 # class RT(Searcher):
 #     """Russia Today search engine using google service"""

@@ -7,7 +7,7 @@ import queue
 
 from TelegramBot.TelegramSender import SendToChannel
 
-rt = RT_SearchEngine(query='السعودية')
+rt = RT_SearchEngine(query='قطر')
 rt.RunExtraction('ar')
 
 
