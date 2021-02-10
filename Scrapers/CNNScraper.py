@@ -5,6 +5,9 @@ from bs4 import BeautifulSoup
 import threading
 import queue
 
+from TelegramBot.TelegramSender import SendToChannel
+
+
 class FindData(RequestDispatcher):
     def __init__(self):
         self.sourcePage = None
@@ -29,6 +32,7 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "_2Jrc-IHPAI _6-YEXCu4FK"}).text
                 print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
                                                                                          published_date))
+                SendToChannel(title, published_date, category, link)
                 print("=" * 30)
                 return title, published_date
             elif 'article' in link:
@@ -37,6 +41,7 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "_2Jrc-IHPAI"}).text
                 print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
                                                                                          published_date))
+                SendToChannel(title, published_date, category, link)
         except BaseException as e:
             print(e, link)
 

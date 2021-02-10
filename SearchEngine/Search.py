@@ -73,7 +73,8 @@ class RT_SearchEngine(RequestDispatcher):
         news = soup.findAll('a', {'class': 'link link_hover'})
         for link in news:
             if self.isLink(link.text):
-                links.append('https://rt.com'+link)
+                print(link.text)
+                links.append(link.text)
         self.Links.extend(links)
         return links
 
@@ -82,7 +83,6 @@ class RT_SearchEngine(RequestDispatcher):
         soup = BeautifulSoup(self.getSourcePage(language='ar'), 'html.parser')
         news = soup.findAll('a', {'class': 'list-search_media'})
         for link in news:
-            print('https://arabic.rt.com' + link.get_attribute_list('href')[0])
             links.append('https://arabic.rt.com' + link.get_attribute_list('href')[0])
         self.Links.extend(links)
         return links

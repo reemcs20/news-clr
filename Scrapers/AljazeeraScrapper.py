@@ -5,7 +5,7 @@ import queue
 from TelegramBot.TelegramSender import SendToChannel
 
 aljazeera_search = Aljazeera()
-aljazeera_search.getNewsLinks(query='بايرن ميونخ')
+aljazeera_search.getNewsLinks(query='حماس')
 
 
 class FindData(RequestDispatcher):
@@ -19,8 +19,7 @@ class FindData(RequestDispatcher):
             published_date = soup.findAll("span", {"class": "article-dates__published"})[0].text
             print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: @Aljazeera".format(title, category,
                                                                                            published_date))
-            SendToChannel("Title: {}\nCategory: {}\nPublished Date: {}\nSource: [Visit]({})".format(title, category,
-                                                                                                published_date,link))
+            SendToChannel(title,published_date,category,link)
             return title, category
         except BaseException as e:
             print(e)

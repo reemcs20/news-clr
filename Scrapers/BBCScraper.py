@@ -4,7 +4,7 @@ import threading
 from bs4 import BeautifulSoup
 
 from SearchEngine.Search import BBC, RequestDispatcher
-
+from TelegramBot.TelegramSender import SendToChannel
 bbc = BBC()
 bbc.getNewsLinks('usa election')
 
@@ -54,7 +54,7 @@ class FindData(RequestDispatcher,Classification):
                 published_date = soup.find('time').text
                 published_date = soup.find('time').text
                 print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
-                print("=" * 30)
+                SendToChannel(title,published_date,category,link)
                 return title, category
             else:
                 title = soup.find('h1', {"id": 'main-heading'}).text
@@ -73,3 +73,5 @@ class FindData(RequestDispatcher,Classification):
             DataFetcherQueue.put(link)
             DataFetcherThread = threading.Thread(target=self.extractData, args=(DataFetcherQueue.get(),))
             DataFetcherThread.start()
+temp = FindData()
+temp.performDataExtraction(bbc.newsLinks)

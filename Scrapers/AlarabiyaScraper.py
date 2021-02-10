@@ -35,7 +35,7 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "article-info"}).text.strip().split('\n')[1]
                 # self.ResultsData.get('alarabiya').append({"title":title,"category":category,"published_date":published_date,'link':link})
                 print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
-                SendToChannel("Title: {}\nCategory: {}\nPublished Date: {}\nSource: @[Visit]({})".format(title, category, published_date,link))
+                SendToChannel(title, published_date, category, link)
                 return title, category
             else:
                 # results are in Arabic
@@ -45,7 +45,7 @@ class FindData(RequestDispatcher):
                 self.ResultsData.get('alarabiya').append(
                     {"title": title, "category": category, "published_date": published_date, 'link': link})
                 print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: [Visit]({})".format(title, category, published_date,link))
-                SendToChannel("{}\n{}\nSource: [Visit]({})".format(title, category,link))
+                SendToChannel(title, published_date, category, link)
                 return title, category
         except AttributeError as e:
             print(e, link)

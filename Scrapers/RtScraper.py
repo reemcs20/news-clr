@@ -5,8 +5,10 @@ from bs4 import BeautifulSoup
 import threading
 import queue
 
-rt = RT_SearchEngine(query='Iran')
-rt.RunExtraction('en')
+from TelegramBot.TelegramSender import SendToChannel
+
+rt = RT_SearchEngine(query='السعودية')
+rt.RunExtraction('ar')
 
 
 class FindData(RequestDispatcher):
@@ -33,14 +35,14 @@ class FindData(RequestDispatcher):
                 category = self.FindTags({"class": 'news-tags news-tags_article'})
                 published_date = soup.find('span', {"class": "date"}).text
                 print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
-                print("=" * 30)
+                SendToChannel(title,published_date,category,link)
                 return title, category
             else:
                 title = soup.find('h1', {"class": 'article__heading'}).text.strip()
                 published_date = soup.find('span', {"class": 'date date_article-header'}).text
                 category = self.FindTags({"class": 'tags-trends'})
                 print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
-                print("=" * 30)
+                SendToChannel(title,published_date,category,link)
         except AttributeError as e:
             print(e)
         except BaseException as e:
