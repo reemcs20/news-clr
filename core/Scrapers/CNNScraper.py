@@ -1,6 +1,6 @@
 import time
 
-from core.SearchEngine import RequestDispatcher
+from core.SearchEngine.Search import RequestDispatcher
 from bs4 import BeautifulSoup
 import threading
 import queue

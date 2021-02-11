@@ -3,10 +3,8 @@ import threading
 
 from bs4 import BeautifulSoup
 
-from core.SearchEngine import BBC, RequestDispatcher
+from core.SearchEngine.Search import BBC, RequestDispatcher
 from core.TelegramBot.TelegramSender import SendToChannel
-bbc = BBC()
-bbc.getNewsLinks('usa election')
 
 
 class Classification:
@@ -73,5 +71,3 @@ class FindData(RequestDispatcher,Classification):
             DataFetcherQueue.put(link)
             DataFetcherThread = threading.Thread(target=self.extractData, args=(DataFetcherQueue.get(),))
             DataFetcherThread.start()
-temp = FindData()
-temp.performDataExtraction(bbc.newsLinks)

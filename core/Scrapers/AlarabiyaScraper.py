@@ -1,11 +1,8 @@
 import queue
 import threading
-
 from bs4 import BeautifulSoup
-from core.SearchEngine import Alarabiya, RequestDispatcher
+from core.SearchEngine.Search import RequestDispatcher
 from core.TelegramBot.TelegramSender import SendToChannel
-alarabiya = Alarabiya(query='Iran')
-alarabiya.RunExtraction('en')
 
 
 class FindData(RequestDispatcher):
@@ -64,5 +61,3 @@ class FindData(RequestDispatcher):
             thread_joiner.join()
 
 
-temp = FindData()
-temp.performDataExtraction(alarabiya.newsLinks)

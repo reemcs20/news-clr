@@ -1,12 +1,17 @@
 import multiprocessing
 from core.SearchEngine.Search import BBC, Aljazeera, Alarabiya, RT_SearchEngine, CNN
 import time
+import argparse
 
+args = argparse.ArgumentParser()
+args.add_argument('-q', default=None, help="a query for searching it", type=str,required=True)
+args.add_argument('-l', default='ar', help="Language of search options", type=str,required=False)
+args_parser = args.parse_args()
 
 
 # ask user to input query and language
-query = 'usa election'
-language = 'en'
+query = args_parser.q
+language = args_parser.l
 
 start_time = time.time()
 bbc = BBC()

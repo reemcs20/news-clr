@@ -1,11 +1,9 @@
 from bs4 import BeautifulSoup
-from core.SearchEngine import RequestDispatcher, Aljazeera
+from core.SearchEngine.Search import RequestDispatcher, Aljazeera
 import threading
 import queue
 from core.TelegramBot.TelegramSender import SendToChannel
 
-aljazeera_search = Aljazeera()
-aljazeera_search.getNewsLinks(query='حماس')
 
 
 class FindData(RequestDispatcher):
@@ -31,6 +29,3 @@ class FindData(RequestDispatcher):
             DataFetcherThread = threading.Thread(target=self.extractData, args=(DataFetcherQueue.get(),))
             DataFetcherThread.start()
 
-
-temp = FindData()
-temp.performDataExtraction(aljazeera_search.newsLinks)

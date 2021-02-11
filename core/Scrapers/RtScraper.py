@@ -1,12 +1,10 @@
-from core.SearchEngine import  RequestDispatcher,RT_SearchEngine
+from core.SearchEngine.Search import  RequestDispatcher,RT_SearchEngine
 from bs4 import BeautifulSoup
 import threading
 import queue
 
 from core.TelegramBot.TelegramSender import SendToChannel
 
-rt = RT_SearchEngine(query='قطر')
-rt.RunExtraction('ar')
 
 
 class FindData(RequestDispatcher):
@@ -54,5 +52,3 @@ class FindData(RequestDispatcher):
             DataFetcherThread.start()
 
 
-temp = FindData()
-temp.performDataExtraction(rt.Links)
