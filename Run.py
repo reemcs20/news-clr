@@ -1,5 +1,5 @@
 import multiprocessing
-from SearchEngine.Search import BBC, Aljazeera, Alarabiya, RT_SearchEngine, CNN
+from core.SearchEngine import BBC, Aljazeera, Alarabiya, RT_SearchEngine, CNN
 import time
 
 

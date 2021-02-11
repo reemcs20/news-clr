@@ -1,11 +1,9 @@
-import time
-
-from SearchEngine.Search import  RequestDispatcher,RT_SearchEngine
+from core.SearchEngine import  RequestDispatcher,RT_SearchEngine
 from bs4 import BeautifulSoup
 import threading
 import queue
 
-from TelegramBot.TelegramSender import SendToChannel
+from core.TelegramBot.TelegramSender import SendToChannel
 
 rt = RT_SearchEngine(query='قطر')
 rt.RunExtraction('ar')

@@ -3,8 +3,8 @@ import threading
 
 from bs4 import BeautifulSoup
 
-from SearchEngine.Search import BBC, RequestDispatcher
-from TelegramBot.TelegramSender import SendToChannel
+from core.SearchEngine import BBC, RequestDispatcher
+from core.TelegramBot.TelegramSender import SendToChannel
 bbc = BBC()
 bbc.getNewsLinks('usa election')
 

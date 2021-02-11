@@ -2,9 +2,8 @@ import queue
 import threading
 
 from bs4 import BeautifulSoup
-import telegram_send
-from SearchEngine.Search import Alarabiya, RequestDispatcher
-from TelegramBot.TelegramSender import SendToChannel
+from core.SearchEngine import Alarabiya, RequestDispatcher
+from core.TelegramBot.TelegramSender import SendToChannel
 alarabiya = Alarabiya(query='Iran')
 alarabiya.RunExtraction('en')
 

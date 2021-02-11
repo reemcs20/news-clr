@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
-from SearchEngine.Search import RequestDispatcher, Aljazeera, CNN
+from core.SearchEngine import RequestDispatcher, Aljazeera
 import threading
 import queue
-from TelegramBot.TelegramSender import SendToChannel
+from core.TelegramBot.TelegramSender import SendToChannel
 
 aljazeera_search = Aljazeera()
 aljazeera_search.getNewsLinks(query='حماس')

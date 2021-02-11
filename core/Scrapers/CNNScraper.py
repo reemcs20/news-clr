@@ -1,11 +1,11 @@
 import time
 
-from SearchEngine.Search import RequestDispatcher
+from core.SearchEngine import RequestDispatcher
 from bs4 import BeautifulSoup
 import threading
 import queue
 
-from TelegramBot.TelegramSender import SendToChannel
+from core.TelegramBot.TelegramSender import SendToChannel
 
 
 class FindData(RequestDispatcher):
