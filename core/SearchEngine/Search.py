@@ -2,6 +2,7 @@ from googlesearch import search
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus, quote
+from core.TelegramBot.TelegramSender import SendToChannel
 
 
 class Searcher:
@@ -40,13 +41,40 @@ class Searcher:
 
 class RequestDispatcher:
     @staticmethod
-    def MakeRequest(target: str):
+    def MakeRequest(target: str, json=False):
         try:
             req = requests.get(target)
             if req.status_code == 200:
+                if json:
+                    return req.json()
                 return req.text
         except BaseException as e:
             print(e)
+
+
+class SkyNews(RequestDispatcher):
+    def __init__(self, query: str):
+        self.query = query.strip()
+        self.AR_searchEngine = 'https://api.skynewsarabia.com//rest/v2/search/text.json?deviceType=DESKTOP&from' \
+                               '=&offset=36&pageSize=25&q={}&showEpisodes=true&sort=RELEVANCE&supportsInfographic=true&to= '.format(
+            self.query)
+
+    def CreateNewsLink(self, news_id, sectionUrl, urlFriendlySuffix):
+        return 'https://www.skynewsarabia.com' + sectionUrl + '/' + news_id + '-' + urlFriendlySuffix
+
+    def RunExtraction(self, language: str = 'ar') -> str:
+        if language.lower() == 'ar':
+            json_data = self.MakeRequest(target=self.AR_searchEngine, json=True)
+            for data in json_data.get('contentItems'):
+                print("title: ", data.get('headline'))
+                print("published date: ", data.get('date'))
+                print("category: ", data.get('category'))
+                print(self.CreateNewsLink(data.get('id'), data.get('sectionUrl'), data.get('urlFriendlySuffix')))
+                SendToChannel(title=data.get('headline'), published_date=data.get('date'),
+                              category=data.get('category'),
+                              link=self.CreateNewsLink(data.get('id'), data.get('sectionUrl'),
+                                                       data.get('urlFriendlySuffix')))
+            return ''
 
 
 class RT_SearchEngine(RequestDispatcher):
@@ -128,12 +156,15 @@ class Aljazeera(Searcher):
         return '"aljazeera.net" "{}"'.format(query)
 
     def getNewsLinks(self, query: str):
-        """Gather response links and store them into list"""
-        results = self.performSearch(query=self.makeDorkSearch(query), tld='net')
-        for newsLink in results:
-            if self.Ensure_Rules(newsLink, 'news') or self.Ensure_Rules(newsLink, 'sport'):
-                print("Rules matched==>", newsLink)
-                self.newsLinks.append(newsLink)
+        try:
+            """Gather response links and store them into list"""
+            results = self.performSearch(query=self.makeDorkSearch(query), tld='net')
+            for newsLink in results:
+                if self.Ensure_Rules(newsLink, 'news') or self.Ensure_Rules(newsLink, 'sport'):
+                    print("Rules matched==>", newsLink)
+                    self.newsLinks.append(newsLink)
+        except BaseException as e:
+            print(e)
 
 
 class CNN(Searcher):
@@ -148,12 +179,15 @@ class CNN(Searcher):
         return '"cnn.com " "{}"'.format(query)
 
     def getNewsLinks(self, query: str):
-        """Gather response links and store them into list"""
-        results = self.performSearch(query=self.makeDorkSearch(query), tld='com')
-        for newsLink in results:
-            if self.Ensure_Rules(newsLink, 'world') or self.Ensure_Rules(newsLink, 'article'):
-                print("Rules matched==>", newsLink)
-                self.newsLinks.append(newsLink)
+        try:
+            """Gather response links and store them into list"""
+            results = self.performSearch(query=self.makeDorkSearch(query), tld='com')
+            for newsLink in results:
+                if self.Ensure_Rules(newsLink, 'world') or self.Ensure_Rules(newsLink, 'article'):
+                    print("Rules matched==>", newsLink)
+                    self.newsLinks.append(newsLink)
+        except BaseException as e:
+            print(e)
 
 
 class Alarabiya(RequestDispatcher):
@@ -216,6 +250,7 @@ class BBC(Searcher):
                 print("Rules matched==>", newsLink)
                 self.newsLinks.append(newsLink)
 
+
 # class RT(Searcher):
 #     """Russia Today search engine using google service"""
 #
@@ -237,7 +272,5 @@ class BBC(Searcher):
 #             else:
 #                 print("Out Of condition: ", newsLink)
 
-# temp = RT_SearchEngine(query='الانتخابات الامركية')
-# temp.AR_extractNewsLinks()
-# temp = Alarabiya(query='Iran')
-# temp.EN_getNewsLinks()
+temp = SkyNews(query='ايران')
+temp.RunExtraction()
