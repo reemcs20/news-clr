@@ -1,7 +1,8 @@
+import json
+
 from googlesearch import search
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import quote_plus, quote
 from core.TelegramBot.TelegramSender import SendToChannel
 
 
@@ -41,9 +42,9 @@ class Searcher:
 
 class RequestDispatcher:
     @staticmethod
-    def MakeRequest(target: str, json=False):
+    def MakeRequest(target: str, json=False,headers:dict= {}):
         try:
-            req = requests.get(target)
+            req = requests.get(target,headers=headers)
             if req.status_code == 200:
                 if json:
                     return req.json()
@@ -56,7 +57,8 @@ class SkyNews(RequestDispatcher):
     def __init__(self, query: str):
         self.query = query.strip()
         self.AR_searchEngine = 'https://api.skynewsarabia.com//rest/v2/search/text.json?deviceType=DESKTOP&from' \
-                               '=&offset=36&pageSize=25&q={}&showEpisodes=true&sort=RELEVANCE&supportsInfographic=true&to= '.format(
+                               '=&offset=36&pageSize=25&q={}&showEpisodes=true&sort=RELEVANCE&supportsInfographic' \
+                               '=true&to= '.format(
             self.query)
 
     def CreateNewsLink(self, news_id, sectionUrl, urlFriendlySuffix):
@@ -144,39 +146,70 @@ class RT_SearchEngine(RequestDispatcher):
 #             print(link['url'])
 
 
-class Aljazeera(Searcher):
+class Aljazeera(Searcher,RequestDispatcher):
     """Aljazeera search engine using google service"""
 
-    def __init__(self):
+    def __init__(self, query: str):
         self.newsLinks = []
+        self.query = query
+        self.EN_headers = {
+            'Host': 'www.aljazeera.com',
+            "Accept-Encoding": 'gzip, deflate, br',
+            "Accept-Language": "en-US,en;q=0.5",
+            "Connection": 'keep-alive',
+            "If-None-Match": """W/"e0-c53f7wDo53oXBizh9J4Kc52/FPs""",
+
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/88.0.4324.146 Safari/537.36',
+            'content-type': 'application/json',
+            'accept': '*/*',
+            "wp-site": "aje",
+            "X-KL-Ajax-Request": "Ajax_Request",
+            'original-domain': 'www.aljazeera.com',
+            'Referer': f'https://www.aljazeera.net/search/{self.query}',
+
+        }
+        self.Search_data = dict(query=self.query, start=1, sort="relevance")
+        self.API = "https://www.aljazeera.com/graphql?wp-site=aje&operationName=SearchQuery&variables={}&extensions={}".format(
+            json.dumps(self.Search_data), '')
 
     @staticmethod
     def makeDorkSearch(query: str) -> str:
         """Make the search operation to best match """
         return '"aljazeera.net" "{}"'.format(query)
 
-    def getNewsLinks(self, query: str):
+    def getNewsLinks(self):
         try:
-            """Gather response links and store them into list"""
-            results = self.performSearch(query=self.makeDorkSearch(query), tld='net')
-            for newsLink in results:
-                if self.Ensure_Rules(newsLink, 'news') or self.Ensure_Rules(newsLink, 'sport'):
-                    print("Rules matched==>", newsLink)
-                    self.newsLinks.append(newsLink)
+            """Gather links from response and store them into list"""
+            result = self.MakeRequest(target=self.API,json=True,headers=self.EN_headers)
+            for newurl in result.get('data').get('searchPosts').get('items'):
+                print(newurl.get('title'))
+                print(newurl.get('link'))
         except BaseException as e:
             print(e)
 
 
-class CNN(Searcher):
+class CNN(Searcher, RequestDispatcher):
     """CNN search engine using google service"""
 
     def __init__(self):
         self.newsLinks = []
+        self.API_CNN_EN = "https://search.api.cnn.io/content?q={}&size=18&category=us,politics,world,opinion," \
+                          "health&sort=relevance "
 
     @staticmethod
     def makeDorkSearch(query: str) -> str:
         """Make the search operation to best match """
         return '"cnn.com " "{}"'.format(query)
+
+    def EN_CNN_Search(self, query: str):
+        results = self.MakeRequest(target=self.API_CNN_EN.format(query.strip()), json=True)
+        for news in results.get('result'):
+            print(news.get('headline'))
+            print(news.get('section'))
+            print(news.get('location'))
+            print(news.get('firstPublishDate'))
+            print('=' * 20)
 
     def getNewsLinks(self, query: str):
         try:
@@ -271,6 +304,5 @@ class BBC(Searcher):
 #                 self.newsLinks.append(newsLink)
 #             else:
 #                 print("Out Of condition: ", newsLink)
-
-temp = SkyNews(query='ايران')
-temp.RunExtraction()
+temp =Aljazeera(query='usa election')
+temp.getNewsLinks()
