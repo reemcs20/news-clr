@@ -1,4 +1,4 @@
-from core.Trends.TrendPoster import AJ_Trends
+from core.Trends.TrendPoster import AJ_Trends,BBC_Trends
 import json
 temp = AJ_Trends()
 temp.ExtractNews()

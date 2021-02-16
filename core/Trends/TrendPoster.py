@@ -5,9 +5,13 @@ from bs4 import BeautifulSoup
 from core.SearchEngine.Search import RequestDispatcher
 
 
-class AJ_Trends(RequestDispatcher):
+class ResultsSearch:
+    AllTrends = {'aljazeera': [], 'bbc': []}
+
+
+class AJ_Trends(RequestDispatcher, ResultsSearch):
     def __init__(self):
-        self.AllTrends = {'aljazeera': []}
+        # self.AllTrends = {'aljazeera': []}
         self.TrendURL = 'https://www.aljazeera.net'
         self.trendsData = self.MakeRequest(target=self.TrendURL, json=False)
 
@@ -29,13 +33,27 @@ class AJ_Trends(RequestDispatcher):
             print(news_link)
 
 
-class BBC_Trends(RequestDispatcher):
+class BBC_Trends(RequestDispatcher,ResultsSearch):
     def __init__(self):
-        self.AllTrends = {'bbc': []}
         self.TrendURL: str = 'https://www.bbc.com/arabic/mostread.json'
-        self.trends = self.MakeRequest(target=self.TrendURL, json=True)
+        self.trends: dict = self.MakeRequest(target=self.TrendURL, json=True).get('records')
+
+    def formURL(self, url: str):
+        """
+        :param url: a short url from API response
+        combine a url with the trend link
+        """
+        return 'https://www.bbc.com' + url
 
     def ParseJson(self):
-        print(self.trends)
+        for Trend in self.trends:
+            title = Trend.get('promo').get('headlines').get('headline')
+            link = Trend.get('promo').get('locators').get('assetUri')
+            self.AllTrends.get('bbc').append(dict(title=title,link=self.formURL(url=link)))
 
 
+t = BBC_Trends()
+j = AJ_Trends()
+j.ExtractNews()
+t.ParseJson()
+print(t.AllTrends)
