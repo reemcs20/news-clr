@@ -4,7 +4,8 @@ import threading
 import queue
 
 from core.TelegramBot.TelegramSender import SendToChannel
-
+from core.appConfig import AppConfigurations
+config = AppConfigurations()
 
 
 class FindData(RequestDispatcher):
@@ -40,9 +41,11 @@ class FindData(RequestDispatcher):
                 print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
                 SendToChannel(title,published_date,category,link)
         except AttributeError as e:
-            print(e)
+            
+                config.debug(level=1, data=e)
         except BaseException as e:
-            print(e)
+            
+                config.debug(level=1, data=e)
 
     def performDataExtraction(self, links: list):
         DataFetcherQueue = queue.Queue()

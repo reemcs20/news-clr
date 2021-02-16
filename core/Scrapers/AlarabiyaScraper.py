@@ -3,6 +3,9 @@ import threading
 from bs4 import BeautifulSoup
 from core.SearchEngine.Search import RequestDispatcher
 from core.TelegramBot.TelegramSender import SendToChannel
+from core.appConfig import AppConfigurations
+
+config = AppConfigurations()
 
 
 class FindData(RequestDispatcher):
@@ -15,7 +18,7 @@ class FindData(RequestDispatcher):
         soup = BeautifulSoup(self.sourcePage, 'html.parser')
         tags = soup.find('ul', target)
         for tag in tags.li.find_next_siblings():
-            tags_container.append("#"+tag.text.strip())
+            tags_container.append("#" + tag.text.strip())
         return tags_container
 
     def extractData(self, link: str) -> tuple:
@@ -40,13 +43,16 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "timeDate"}).time.text
                 self.ResultsData.get('alarabiya').append(
                     {"title": title, "category": category, "published_date": published_date, 'link': link})
-                print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: [Visit]({})".format(title, category, published_date,link))
+                print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: [Visit]({})".format(title, category,
+                                                                                                published_date, link))
                 SendToChannel(title, published_date, category, link)
                 return title, category
         except AttributeError as e:
-            print(e, link)
+            
+                config.debug(level=1, data=e)
         except BaseException as e:
-            print(e, 38)
+            
+                config.debug(level=1, data=e)
 
     def performDataExtraction(self, links: list):
         DataFetcherQueue = queue.Queue()
@@ -59,5 +65,3 @@ class FindData(RequestDispatcher):
             thread_starter.start()
         for thread_joiner in threads:
             thread_joiner.join()
-
-

@@ -2,7 +2,7 @@ import requests
 import json
 query = 'Iran'
 headers = {
-    'Host': 'www.aljazeera.com',
+    'Host': 'www.aljazeera.net',
     "Accept-Encoding":'gzip, deflate, br',
     "Accept-Language": "en-US,en;q=0.5",
     "Connection":'keep-alive',
@@ -14,11 +14,11 @@ headers = {
     'accept': '*/*',
     "wp-site":"aje",
     "X-KL-Ajax-Request": "Ajax_Request",
-    'original-domain': 'www.aljazeera.com',
+    'original-domain': 'www.aljazeera.net',
     'Referer': f'https://www.aljazeera.net/search/{query}',
 
 }
-Search_data = dict(query=query, start=1, sort="relevance")
-req = requests.get('https://www.aljazeera.com/graphql?wp-site=aje&operationName=SearchQuery&variables={}&extensions={}'.format(json.dumps(Search_data),''),headers=headers)
+Search_data = dict(query='ايران', start=1, sort="relevance")
+req = requests.get('https://www.aljazeera.net/graphql?wp-site=aje&operationName=SearchQuery&variables={}&extensions={}'.format(json.dumps(Search_data),''),headers=headers)
 print(req.text)
 print(req.status_code)

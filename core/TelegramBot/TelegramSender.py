@@ -1,5 +1,8 @@
 import telegram_send
 from telegram_send import telegram
+from core.appConfig import AppConfigurations
+
+config = AppConfigurations()
 
 
 def CreateHashTags(tags: list) -> str:
@@ -27,4 +30,5 @@ def SendToChannel(title: str, published_date: str, category: list, link: str) ->
                                                                                                    published_date, link)
         telegram_send.send(parse_mode=telegram.ParseMode.MARKDOWN, messages=[formed_message])
     except BaseException as e:
-        print(e)
+
+        config.debug(level=1, data=e)
