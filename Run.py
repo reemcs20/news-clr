@@ -14,7 +14,7 @@ query = args_parser.q
 language: str = args_parser.l
 
 start_time = time.time()
-bbc = BBC(query=query)
+# bbc = BBC(query=query)
 cnn = CNN()
 aljazeera = Aljazeera(query=query,language=language)
 alarabiya = Alarabiya(query=query)
@@ -22,7 +22,7 @@ rt = RT_SearchEngine(query=query)
 
 if __name__ == "__main__":
     
-    bbc_process_google = multiprocessing.Process(target=bbc.getNewsLinks)
+    # bbc_process_google = multiprocessing.Process(target=bbc.getNewsLinks)
     cnn_process_google = multiprocessing.Process(target=cnn.EN_CNN_Search, args=(query,))
     aljazeera_process_google = multiprocessing.Process(target=aljazeera.getNewsLinks)
     alarabiya_process = multiprocessing.Process(target=alarabiya.RunExtraction, args=(language,))
@@ -32,13 +32,13 @@ if __name__ == "__main__":
     rt_process.start()
     alarabiya_process.start()
     # starting processes
-    bbc_process_google.start()
+    # bbc_process_google.start()
     cnn_process_google.start()
     aljazeera_process_google.start()
     rt_process.join()
     aljazeera_process_google.join()
     cnn_process_google.join()
-    bbc_process_google.join()
+    # bbc_process_google.join()
     alarabiya_process.join()
 
     print("After all search engines have ended")
