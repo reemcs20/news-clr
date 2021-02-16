@@ -86,7 +86,8 @@ class SkyNews(RequestDispatcher):
                     print("published date: ", published_date)
                     print("category: ", category)
                     print("Link: ", link)
-                threading.Thread(target=SendToChannel, args=(title, published_date, category, link)).start() # Send News to telegram
+                threading.Thread(target=SendToChannel,
+                                 args=(title, published_date, category, link)).start()  # Send News to telegram
             return ''
 
 
@@ -141,27 +142,6 @@ class RT_SearchEngine(RequestDispatcher):
             self.AR_extractNewsLinks()
         else:
             self.EN_extractNewsLinks()
-
-
-# @DeprecationWarning
-# class CNN_SearchEngine(RequestDispatcher):
-#     def __init__(self, query: str):
-#         self.query = query
-#         self.searchEngineURL = "https://search.api.cnn.io/content?size=20&q={}&category=us,politics,world,opinion," \
-#                                "health ".format(self.query)
-#
-#     def MakeRequest(self, target) -> dict:
-#         try:
-#             req = requests.get(target)
-#             if req.status_code == 200:
-#                 return req.json()
-#         except BaseException as e:
-#             print(e)
-#
-#     def Response(self):
-#         response = self.MakeRequest(target=self.searchEngineURL)
-#         for link in response.get('result'):
-#             print(link['url'])
 
 
 class Aljazeera(Searcher, RequestDispatcher):
@@ -254,11 +234,10 @@ class CNN(Searcher, RequestDispatcher):
     def EN_CNN_Search(self, query: str):
         results = self.MakeRequest(target=self.API_CNN_EN.format(query.strip()), json=True)
         for news in results.get('result'):
-            if config.debug:
-                title = news.get('headline')
-                tags = news.get('section')
-                published_date = news.get('firstPublishDate')
-                link = news.get('url')
+            title = news.get('headline')
+            tags = news.get('section')
+            published_date = news.get('firstPublishDate')
+            link = news.get('url')
 
     # def getNewsLinks(self, query: str):
     #     try:
@@ -320,7 +299,7 @@ class Alarabiya(RequestDispatcher):
 class BBC(Searcher):
     """BBC search engine using google service"""
 
-    def __init__(self,query: str):
+    def __init__(self, query: str):
         self.query = query
         self.newsLinks = []
 
@@ -382,9 +361,10 @@ class FoxNews_EN(RequestDispatcher, Searcher):
                     published_date = news_published_date
                     link = news_link
                     category = news_tags
-                    print("Link", news_link)
-                    print("Title", news_title)
-                    print("Categories", news_tags)
-                    print("Published date:", news_published_date)
+                    if config.debug:
+                        print("Link", news_link)
+                        print("Title", news_title)
+                        print("Categories", news_tags)
+                        print("Published date:", news_published_date)
                 # Send news to telegram channel
                 threading.Thread(target=SendToChannel, args=(title, published_date, category, link)).start()

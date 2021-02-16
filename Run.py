@@ -1,27 +1,34 @@
 import multiprocessing
-from core.SearchEngine.Search import BBC, Aljazeera, Alarabiya, RT_SearchEngine, CNN,FoxNews_EN,SkyNews
+from core.SearchEngine.Search import BBC, Aljazeera, Alarabiya, RT_SearchEngine, CNN, FoxNews_EN, SkyNews
 import time
 import argparse
 from core.Scrapers import *
+
 args = argparse.ArgumentParser()
-args.add_argument('-q', default=None, help="a query for searching it", type=str,required=True)
-args.add_argument('-l', default='ar', help="Language of search options", type=str,required=False)
+args.add_argument('-q', default=None, help="a query for searching it", type=str, required=True)
+args.add_argument('-l', default='ar', help="Language of search options", type=str, required=False)
 args_parser = args.parse_args()
+query = args_parser.q
+language: str = args_parser.l
+
+
+class ResultsSearch:
+    if args.language == 'ar':
+        AllTrends = dict(aljazeera=[], skynews=[], alarabiya=[], rt=[])
+    else:
+        AllTrends = dict(aljazeera=[], bbc=[], cnn=[], foxnews=[], alarabiya=[], rt=[])
 
 
 # ask user to input query and language
-query = args_parser.q
-language: str = args_parser.l
 
 start_time = time.time()
 # bbc = BBC(query=query)
 cnn = CNN()
-aljazeera = Aljazeera(query=query,language=language)
+aljazeera = Aljazeera(query=query, language=language)
 alarabiya = Alarabiya(query=query)
 rt = RT_SearchEngine(query=query)
 
 if __name__ == "__main__":
-    
     # bbc_process_google = multiprocessing.Process(target=bbc.getNewsLinks)
     cnn_process_google = multiprocessing.Process(target=cnn.EN_CNN_Search, args=(query,))
     aljazeera_process_google = multiprocessing.Process(target=aljazeera.getNewsLinks)
