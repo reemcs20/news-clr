@@ -52,8 +52,3 @@ class BBC_Trends(RequestDispatcher,ResultsSearch):
             self.AllTrends.get('bbc').append(dict(title=title,link=self.formURL(url=link)))
 
 
-t = BBC_Trends()
-j = AJ_Trends()
-j.ExtractNews()
-t.ParseJson()
-print(t.AllTrends)
