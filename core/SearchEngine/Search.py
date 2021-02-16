@@ -255,11 +255,10 @@ class CNN(Searcher, RequestDispatcher):
         results = self.MakeRequest(target=self.API_CNN_EN.format(query.strip()), json=True)
         for news in results.get('result'):
             if config.debug:
-                print(news.get('headline'))
-                print(news.get('section'))
-                print(news.get('location'))
-                print(news.get('firstPublishDate'))
-                print('=' * 20)
+                title = news.get('headline')
+                tags = news.get('section')
+                published_date = news.get('firstPublishDate')
+                link = news.get('url')
 
     # def getNewsLinks(self, query: str):
     #     try:

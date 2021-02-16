@@ -44,8 +44,3 @@ class FindData(RequestDispatcher):
             DataFetcherThread = threading.Thread(target=self.extractData, args=(DataFetcherQueue.get(),))
             DataFetcherThread.start()
 
-
-temp = Aljazeera(query='usa election'.encode('utf-8'), language='en')
-temp.getNewsLinks()
-t = FindData(language='en')
-t.performDataExtraction(temp.newsLinks)
