@@ -2,7 +2,7 @@ import multiprocessing
 from core.SearchEngine.Search import BBC, Aljazeera, Alarabiya, RT_SearchEngine, CNN,FoxNews_EN,SkyNews
 import time
 import argparse
-
+from core.Scrapers import *
 args = argparse.ArgumentParser()
 args.add_argument('-q', default=None, help="a query for searching it", type=str,required=True)
 args.add_argument('-l', default='ar', help="Language of search options", type=str,required=False)
