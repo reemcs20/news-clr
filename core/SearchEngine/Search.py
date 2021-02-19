@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from core.TelegramBot.TelegramSender import SendToChannel
 from core.appConfig import AppConfigurations
-
+from core.ext.Utiltiy import write_json
 config = AppConfigurations()
 
 
@@ -62,7 +62,9 @@ class RequestDispatcher:
 
 
 class SkyNews(RequestDispatcher):
-    def __init__(self, query: str):
+    def __init__(self, query: str,collector):
+        self.collector = collector
+        self.Results = {'SkyNews':[]}
         self.query = query.strip()
         self.AR_searchEngine = 'https://api.skynewsarabia.com//rest/v2/search/text.json?deviceType=DESKTOP&from' \
                                '=&offset=36&pageSize=25&q={}&showEpisodes=true&sort=RELEVANCE&supportsInfographic' \
@@ -81,13 +83,16 @@ class SkyNews(RequestDispatcher):
                 category = data.get('category')
                 link = self.CreateNewsLink(data.get('id'), data.get('sectionUrl'),
                                            data.get('urlFriendlySuffix'))
-                if config.debug:
+                self.Results.get("SkyNews").append(dict(title=title,published_date=published_date,category=category,link=link))
+                self.collector.AllTrends.get('skynews').append(dict(title=title,published_date=published_date,category=category,link=link))
+                if config.DEBUG:
                     print("title: ", title)
                     print("published date: ", published_date)
                     print("category: ", category)
                     print("Link: ", link)
                 threading.Thread(target=SendToChannel,
                                  args=(title, published_date, category, link)).start()  # Send News to telegram
+            write_json(config.TEMP_LINUX_PATH,'skynews',self.Results)
             return ''
 
 
@@ -121,7 +126,7 @@ class RT_SearchEngine(RequestDispatcher):
         news = soup.findAll('a', {'class': 'link link_hover'})
         for link in news:
             if self.isLink(link.text):
-                if config.debug:
+                if config.DEBUG:
                     print(link.text)
                 links.append(link.text)
         self.Links.extend(links)
@@ -132,7 +137,7 @@ class RT_SearchEngine(RequestDispatcher):
         soup = BeautifulSoup(self.getSourcePage(language='ar'), 'html.parser')
         news = soup.findAll('a', {'class': 'list-search_media'})
         for link in news:
-            # print('https://arabic.rt.com' + link.get_attribute_list('href')[0])
+            print('https://arabic.rt.com' + link.get_attribute_list('href')[0])
             links.append('https://arabic.rt.com' + link.get_attribute_list('href')[0])
         self.Links.extend(links)
         return links
@@ -147,10 +152,10 @@ class RT_SearchEngine(RequestDispatcher):
 class Aljazeera(Searcher, RequestDispatcher):
     """Aljazeera search engine using google service"""
 
-    def __init__(self, query: str, language='en'):
+    def __init__(self, query, language='en'):
         self.lang = language
         self.newsLinks = []
-        self.query = str(query)
+        self.query = query
         self.AR_headers = {
             'Host': 'www.aljazeera.net',
             "Accept-Encoding": 'gzip, deflate, br',
@@ -185,7 +190,7 @@ class Aljazeera(Searcher, RequestDispatcher):
             'Referer': f'https://www.aljazeera.net/search/{self.query}',
 
         }
-        self.Search_data = dict(query=query, start=1, sort="relevance")
+        self.Search_data = dict(query=query.decode('utf-8'), start=1, sort="relevance")
         self.API = "https://www.aljazeera.com/graphql?wp-site=aje&operationName=SearchQuery&variables={}&extensions={}".format(
             json.dumps(self.Search_data), '')
         self.AR_API = "https://www.aljazeera.net/graphql?wp-site=aje&operationName=SearchQuery&variables={}&extensions={}".format(
@@ -202,14 +207,14 @@ class Aljazeera(Searcher, RequestDispatcher):
             if self.lang == 'ar':
                 result = self.MakeRequest(target=self.AR_API, json=True, headers=self.AR_headers)
                 for newurl in result.get('data').get('searchPosts').get('items'):
-                    if config.debug:
+                    if config.DEBUG:
                         print(newurl.get('title'))
                         print(newurl.get('link'))
                     self.newsLinks.append(newurl.get('link'))
             else:
                 result = self.MakeRequest(target=self.API, json=True, headers=self.EN_headers)
                 for newurl in result.get('data').get('searchPosts').get('items'):
-                    if config.debug:
+                    if config.DEBUG:
                         print(newurl.get('title'))
                         print(newurl.get('link'))
                     self.newsLinks.append(newurl.get('link'))
@@ -269,7 +274,7 @@ class Alarabiya(RequestDispatcher):
         soup = BeautifulSoup(results, 'html.parser')
         news = soup.find_all('div', {"class": 'latest_content'})
         for link in news:
-            if config.debug:
+            if config.DEBUG:
                 print(self.CombineURL(link.a.get_attribute_list('href')[0]))
             self.newsLinks.append(self.CombineURL(link.a.get_attribute_list('href')[0]))
         return self.newsLinks
@@ -281,11 +286,11 @@ class Alarabiya(RequestDispatcher):
         news = soup.find_all('div', attrs={'class': 'latest_content'})
         for link in news:
             if link.a.get_attribute_list('href')[0]:
-                if config.debug:
+                if config.DEBUG:
                     print('https://english.alarabiya.net' + link.a.get_attribute_list('href')[0])
                 self.newsLinks.append('https://english.alarabiya.net' + link.a.get_attribute_list('href')[0])
             else:
-                if config.debug:
+                if config.DEBUG:
                     print(link.a)
         return self.newsLinks
 
@@ -313,7 +318,7 @@ class BBC(Searcher):
         results = self.performSearch(query=self.makeDorkSearch(self.query), tld='net')
         for newsLink in results:
             if self.Ensure_Rules(newsLink, 'bbc.com'):
-                if config.debug:
+                if config.DEBUG:
                     print("Rules matched==>", newsLink)
                 self.newsLinks.append(newsLink)
 
@@ -356,12 +361,13 @@ class FoxNews_EN(RequestDispatcher, Searcher):
                 else:
                     news_tags = item.get('pagemap').get('metatags')[0].get('classification-isa').split(',')
                 # Print data to user
-                if config.debug:
-                    title = news_title
-                    published_date = news_published_date
-                    link = news_link
-                    category = news_tags
-                    if config.debug:
+                title = news_title
+                published_date = news_published_date
+                link = news_link
+                category = news_tags
+
+                if config.DEBUG:
+                    if config.DEBUG:
                         print("Link", news_link)
                         print("Title", news_title)
                         print("Categories", news_tags)

@@ -1,53 +1,74 @@
-import multiprocessing
-from core.SearchEngine.Search import BBC, Aljazeera, Alarabiya, RT_SearchEngine, CNN, FoxNews_EN, SkyNews
-import time
 import argparse
-from core.Scrapers import *
+import multiprocessing
+import time
+
+from core.SearchEngine.Search import *
+
+start_time = time.time()
 
 args = argparse.ArgumentParser()
-args.add_argument('-q', default=None, help="a query for searching it", type=str, required=True)
+args.add_argument('-q', default='ايران', help="a query for searching it", type=str, required=False)
 args.add_argument('-l', default='ar', help="Language of search options", type=str, required=False)
 args_parser = args.parse_args()
-query = args_parser.q
+query: str = args_parser.q
 language: str = args_parser.l
 
 
 class ResultsSearch:
-    if args.language == 'ar':
+    if language == 'ar':
         AllTrends = dict(aljazeera=[], skynews=[], alarabiya=[], rt=[])
     else:
         AllTrends = dict(aljazeera=[], bbc=[], cnn=[], foxnews=[], alarabiya=[], rt=[])
 
 
-# ask user to input query and language
+collector = ResultsSearch()
+#########AR########
+if __name__ == '__main__':
+    if language == 'ar':
+        sky_news = SkyNews(query=query, collector=collector)
+        aljazeera = Aljazeera(query=query.encode('utf-8'), language=language)
+        alarabiya = Alarabiya(query=query)
+        rt = RT_SearchEngine(query=query)
+        aljazeera_process = multiprocessing.Process(target=aljazeera.getNewsLinks)
+        alarabiya_process = multiprocessing.Process(target=alarabiya.RunExtraction, args=(language,))
+        rt_process = multiprocessing.Process(target=rt.RunExtraction, args=(language,))
+        sky_news_process = multiprocessing.Process(target=sky_news.RunExtraction,
+                                                   args=(language,))
+        sky_news_process.start()
+        aljazeera_process.start()
+        alarabiya_process.start()
+        rt_process.start()
+        sky_news_process.join()
+        aljazeera_process.join()
+        alarabiya_process.join()
+        rt_process.join()
+        print(sky_news.Results)
+        print("Done! Taken Time:", time.time() - start_time)
+        print(collector.AllTrends)
 
-start_time = time.time()
-# bbc = BBC(query=query)
-cnn = CNN()
-aljazeera = Aljazeera(query=query, language=language)
-alarabiya = Alarabiya(query=query)
-rt = RT_SearchEngine(query=query)
+# cnn = CNN()
 
-if __name__ == "__main__":
-    # bbc_process_google = multiprocessing.Process(target=bbc.getNewsLinks)
-    cnn_process_google = multiprocessing.Process(target=cnn.EN_CNN_Search, args=(query,))
-    aljazeera_process_google = multiprocessing.Process(target=aljazeera.getNewsLinks)
-    alarabiya_process = multiprocessing.Process(target=alarabiya.RunExtraction, args=(language,))
-    rt_process = multiprocessing.Process(target=rt.RunExtraction, args=(language,))
+# rt = RT_SearchEngine(query=query)
 
-    # creating processes
-    rt_process.start()
-    alarabiya_process.start()
-    # starting processes
-    # bbc_process_google.start()
-    cnn_process_google.start()
-    aljazeera_process_google.start()
-    rt_process.join()
-    aljazeera_process_google.join()
-    cnn_process_google.join()
-    # bbc_process_google.join()
-    alarabiya_process.join()
-
-    print("After all search engines have ended")
-    # both processes finished
-    print("Done! Taken Time:", time.time() - start_time)
+# if __name__ == "__main__":
+# # bbc_process_google = multiprocessing.Process(target=bbc.getNewsLinks)
+# cnn_process_google = multiprocessing.Process(target=cnn.EN_CNN_Search, args=(query,))
+# aljazeera_process_google = multiprocessing.Process(target=aljazeera.getNewsLinks)
+# alarabiya_process = multiprocessing.Process(target=alarabiya.RunExtraction, args=(language,))
+# rt_process = multiprocessing.Process(target=rt.RunExtraction, args=(language,))
+#
+# # creating processes
+# rt_process.start()
+# alarabiya_process.start()
+# # starting processes
+# # bbc_process_google.start()
+# cnn_process_google.start()
+# aljazeera_process_google.start()
+# rt_process.join()
+# aljazeera_process_google.join()
+# cnn_process_google.join()
+# # bbc_process_google.join()
+# alarabiya_process.join()
+#
+# print("After all search engines have ended")
+# # both processes finished

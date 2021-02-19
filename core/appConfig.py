@@ -4,6 +4,8 @@ from datetime import datetime
 class AppConfigurations:
     DEBUG = True
     REGISTER_ERROR = False
+    TEMP_WIN_PATH = r'C:\Users\PC\OneDrive\NewsCrawlers\core\temp'
+    TEMP_LINUX_PATH = r"/root/NewsCrawlers/core/temp/"
 
     def Error_Register(self, data):
         try:
