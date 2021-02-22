@@ -3,9 +3,8 @@ import multiprocessing
 import time
 
 from core.SearchEngine.Search import *
-
+from core.ext.Utiltiy import EchoResult
 start_time = time.time()
-
 args = argparse.ArgumentParser()
 args.add_argument('-q', default='ايران', help="a query for searching it", type=str, required=False)
 args.add_argument('-l', default='ar', help="Language of search options", type=str, required=False)
@@ -42,9 +41,9 @@ if __name__ == '__main__':
         aljazeera_process.join()
         alarabiya_process.join()
         rt_process.join()
-        print(sky_news.Results)
+        EchoResult().ReadJson()
         print("Done! Taken Time:", time.time() - start_time)
-        print(collector.AllTrends)
+
 
 # cnn = CNN()
 

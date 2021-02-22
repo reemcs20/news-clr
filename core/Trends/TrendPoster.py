@@ -23,14 +23,10 @@ class AJ_Trends(RequestDispatcher, ResultsSearch):
             news_title = headTrend.text
             news_link = 'https://www.aljazeera.net' + headTrend.get_attribute_list('href')[0]
             self.AllTrends.get('aljazeera').append(dict(title=news_title, link=news_link))
-            print(headTrend.text)
-            print('https://www.aljazeera.net' + headTrend.get_attribute_list('href')[0])
         for Vertical_news in Vertical_header:
             news_title = Vertical_news.a.text
             news_link = 'https://www.aljazeera.net' + Vertical_news.a.get_attribute_list('href')[0]
             self.AllTrends.get('aljazeera').append(dict(title=news_title, link=news_link))
-            print(news_title)
-            print(news_link)
 
 
 class BBC_Trends(RequestDispatcher,ResultsSearch):

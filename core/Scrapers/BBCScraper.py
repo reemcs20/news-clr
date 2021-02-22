@@ -55,7 +55,7 @@ class FindData(RequestDispatcher, Classification):
                 published_date = soup.find('time').text
                 published_date = soup.find('time').text
                 print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
-                SendToChannel(title, published_date, category, link)
+                # SendToChannel(title, published_date, category, link)
                 return title, category
             else:
                 title = soup.find('h1', {"id": 'main-heading'}).text

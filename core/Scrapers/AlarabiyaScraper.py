@@ -1,9 +1,12 @@
 import queue
 import threading
+
+import requests
 from bs4 import BeautifulSoup
-from core.SearchEngine.Search import RequestDispatcher
 from core.TelegramBot.TelegramSender import SendToChannel
 from core.appConfig import AppConfigurations
+from core.ext.Utiltiy import write_json
+from core.ext.http_Req import RequestDispatcher
 
 config = AppConfigurations()
 
@@ -18,7 +21,7 @@ class FindData(RequestDispatcher):
         soup = BeautifulSoup(self.sourcePage, 'html.parser')
         tags = soup.find('ul', target)
         for tag in tags.li.find_next_siblings():
-            tags_container.append("#" + tag.text.strip())
+            tags_container.append(tag.text.strip())
         return tags_container
 
     def extractData(self, link: str) -> tuple:
@@ -32,9 +35,11 @@ class FindData(RequestDispatcher):
                 title = soup.find('h1').text
                 category = self.FindTags(target={"class": "tags-related"})
                 published_date = soup.find('div', {"class": "article-info"}).text.strip().split('\n')[1]
-                # self.ResultsData.get('alarabiya').append({"title":title,"category":category,"published_date":published_date,'link':link})
+                self.ResultsData.get('alarabiya').append(
+                    dict(title=title, category=category, published_date=published_date, link=link))
                 print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
-                SendToChannel(title, published_date, category, link)
+                # SendToChannel(title, published_date, category, link)
+
                 return title, category
             else:
                 # results are in Arabic
@@ -42,17 +47,17 @@ class FindData(RequestDispatcher):
                 category = self.FindTags(target={"class": "tags"})
                 published_date = soup.find('div', {"class": "timeDate"}).time.text
                 self.ResultsData.get('alarabiya').append(
-                    {"title": title, "category": category, "published_date": published_date, 'link': link})
+                    dict(title=title, category=category, published_date=published_date, link=link))
                 print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: [Visit]({})".format(title, category,
                                                                                                 published_date, link))
-                SendToChannel(title, published_date, category, link)
+                # SendToChannel(title, published_date, category, link)
                 return title, category
         except AttributeError as e:
-            
-                config.debug(level=1, data=e)
+
+            config.debug(level=1, data=e)
         except BaseException as e:
-            
-                config.debug(level=1, data=e)
+
+            config.debug(level=1, data=e)
 
     def performDataExtraction(self, links: list):
         DataFetcherQueue = queue.Queue()
@@ -65,3 +70,4 @@ class FindData(RequestDispatcher):
             thread_starter.start()
         for thread_joiner in threads:
             thread_joiner.join()
+        write_json(config.EnvironmentPath(), 'alarabiya', self.ResultsData)

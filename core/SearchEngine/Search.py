@@ -8,7 +8,15 @@ from bs4 import BeautifulSoup
 from core.TelegramBot.TelegramSender import SendToChannel
 from core.appConfig import AppConfigurations
 from core.ext.Utiltiy import write_json
+from core.Scrapers.RtScraper import FindData as RT_Scraper
+from core.Scrapers.AlarabiyaScraper import FindData as AlarabiyaScrapper
+from core.Scrapers.AljazeeraScrapper import FindData as AjScrapper
+from core.ext.http_Req import RequestDispatcher
+
 config = AppConfigurations()
+rt_scraper = RT_Scraper()
+alarabiya = AlarabiyaScrapper()
+aljazera = AjScrapper()
 
 
 class Searcher:
@@ -45,26 +53,11 @@ class Searcher:
         return rule in link
 
 
-class RequestDispatcher:
-    @staticmethod
-    def MakeRequest(target: str, json=False, headers=None):
-        if headers is None:
-            headers = dict()
-        try:
-            req = requests.get(target, headers=headers)
-            if req.status_code == 200:
-                if json:
-                    return req.json()
-                return req.text
-        except BaseException as e:
-
-            config.debug(level=1, data=e)
-
-
 class SkyNews(RequestDispatcher):
-    def __init__(self, query: str,collector):
+    def __init__(self, query: str, collector):
+
         self.collector = collector
-        self.Results = {'SkyNews':[]}
+        self.Results = {'SkyNews': []}
         self.query = query.strip()
         self.AR_searchEngine = 'https://api.skynewsarabia.com//rest/v2/search/text.json?deviceType=DESKTOP&from' \
                                '=&offset=36&pageSize=25&q={}&showEpisodes=true&sort=RELEVANCE&supportsInfographic' \
@@ -83,8 +76,10 @@ class SkyNews(RequestDispatcher):
                 category = data.get('category')
                 link = self.CreateNewsLink(data.get('id'), data.get('sectionUrl'),
                                            data.get('urlFriendlySuffix'))
-                self.Results.get("SkyNews").append(dict(title=title,published_date=published_date,category=category,link=link))
-                self.collector.AllTrends.get('skynews').append(dict(title=title,published_date=published_date,category=category,link=link))
+                self.Results.get("SkyNews").append(
+                    dict(title=title, published_date=published_date, category=category, link=link))
+                self.collector.AllTrends.get('skynews').append(
+                    dict(title=title, published_date=published_date, category=category, link=link))
                 if config.DEBUG:
                     print("title: ", title)
                     print("published date: ", published_date)
@@ -92,12 +87,13 @@ class SkyNews(RequestDispatcher):
                     print("Link: ", link)
                 threading.Thread(target=SendToChannel,
                                  args=(title, published_date, category, link)).start()  # Send News to telegram
-            write_json(config.TEMP_LINUX_PATH,'skynews',self.Results)
+            write_json(config.EnvironmentPath(), 'skynews', self.Results)
             return ''
 
 
 class RT_SearchEngine(RequestDispatcher):
     def __init__(self, query: str):
+        super().__init__()
         """
 
         :type query: str
@@ -130,6 +126,7 @@ class RT_SearchEngine(RequestDispatcher):
                     print(link.text)
                 links.append(link.text)
         self.Links.extend(links)
+        rt_scraper.performDataExtraction(self.Links)
         return links
 
     def AR_extractNewsLinks(self):
@@ -140,6 +137,7 @@ class RT_SearchEngine(RequestDispatcher):
             print('https://arabic.rt.com' + link.get_attribute_list('href')[0])
             links.append('https://arabic.rt.com' + link.get_attribute_list('href')[0])
         self.Links.extend(links)
+        rt_scraper.performDataExtraction(self.Links)
         return links
 
     def RunExtraction(self, lang):
@@ -196,30 +194,27 @@ class Aljazeera(Searcher, RequestDispatcher):
         self.AR_API = "https://www.aljazeera.net/graphql?wp-site=aje&operationName=SearchQuery&variables={}&extensions={}".format(
             json.dumps(self.Search_data), '')
 
-    @staticmethod
-    def makeDorkSearch(query: str) -> str:
-        """Make the search operation to best match """
-        return '"aljazeera.net" "{}"'.format(query)
-
     def getNewsLinks(self):
         try:
             """Gather links from response and store them into list"""
             if self.lang == 'ar':
                 result = self.MakeRequest(target=self.AR_API, json=True, headers=self.AR_headers)
-                for newurl in result.get('data').get('searchPosts').get('items'):
+                for news_url in result.get('data').get('searchPosts').get('items'):
+                    self.newsLinks.append(news_url.get('link'))
                     if config.DEBUG:
-                        print(newurl.get('title'))
-                        print(newurl.get('link'))
-                    self.newsLinks.append(newurl.get('link'))
+                        print(news_url.get('title'))
+                        print(news_url.get('link'))
+                aljazera.performDataExtraction(self.newsLinks)
             else:
                 result = self.MakeRequest(target=self.API, json=True, headers=self.EN_headers)
-                for newurl in result.get('data').get('searchPosts').get('items'):
+                for news_url in result.get('data').get('searchPosts').get('items'):
+                    self.newsLinks.append(news_url.get('link'))
                     if config.DEBUG:
-                        print(newurl.get('title'))
-                        print(newurl.get('link'))
-                    self.newsLinks.append(newurl.get('link'))
-        except BaseException as e:
+                        print(news_url.get('title'))
+                        print(news_url.get('link'))
 
+                # aljazera.performDataExtraction(self.newsLinks)
+        except BaseException as e:
             config.debug(level=1, data=e)
 
 
@@ -228,6 +223,7 @@ class CNN(Searcher, RequestDispatcher):
 
     def __init__(self):
         self.newsLinks = []
+        self.Results = {'cnn': []}
         self.API_CNN_EN = "https://search.api.cnn.io/content?q={}&size=18&category=us,politics,world,opinion," \
                           "health&sort=relevance "
 
@@ -243,7 +239,8 @@ class CNN(Searcher, RequestDispatcher):
             tags = news.get('section')
             published_date = news.get('firstPublishDate')
             link = news.get('url')
-
+            self.Results.get("cnn").append(dict(title=title, tags=tags, published_date=published_date, link=link))
+        write_json(config.EnvironmentPath(), 'cnn', self.Results)
     # def getNewsLinks(self, query: str):
     #     try:
     #         """Gather response links and store them into list"""
@@ -277,6 +274,7 @@ class Alarabiya(RequestDispatcher):
             if config.DEBUG:
                 print(self.CombineURL(link.a.get_attribute_list('href')[0]))
             self.newsLinks.append(self.CombineURL(link.a.get_attribute_list('href')[0]))
+        alarabiya.performDataExtraction(self.newsLinks)
         return self.newsLinks
 
     def EN_getNewsLinks(self) -> list:
@@ -292,6 +290,7 @@ class Alarabiya(RequestDispatcher):
             else:
                 if config.DEBUG:
                     print(link.a)
+        alarabiya.performDataExtraction(self.newsLinks)
         return self.newsLinks
 
     def RunExtraction(self, lang):
@@ -325,6 +324,7 @@ class BBC(Searcher):
 
 class FoxNews_EN(RequestDispatcher, Searcher):
     def __init__(self, query):
+        self.Results = {'foxnews': []}
         self.query = query
         self.API = f"https://api.foxnews.com/search/web?q={self.query}+-filetype:json+-filetype:json+more:pagemap" \
                    f":metatags-prism.section&siteSearch=foxnews.com&siteSearchFilter=i&callback=__jp0"
@@ -365,12 +365,14 @@ class FoxNews_EN(RequestDispatcher, Searcher):
                 published_date = news_published_date
                 link = news_link
                 category = news_tags
-
+                self.Results.get("foxnews").append(
+                    dict(title=title, published_date=published_date, category=category, link=link))
                 if config.DEBUG:
                     if config.DEBUG:
                         print("Link", news_link)
                         print("Title", news_title)
                         print("Categories", news_tags)
                         print("Published date:", news_published_date)
-                # Send news to telegram channel
-                threading.Thread(target=SendToChannel, args=(title, published_date, category, link)).start()
+        write_json(config.EnvironmentPath(), 'foxnews', self.Results)
+        # Send news to telegram channel
+        # threading.Thread(target=SendToChannel, args=(title, published_date, category, link)).start()

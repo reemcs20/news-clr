@@ -7,7 +7,9 @@ import queue
 
 from core.TelegramBot.TelegramSender import SendToChannel
 from core.appConfig import AppConfigurations
+
 config = AppConfigurations()
+
 
 class FindData(RequestDispatcher):
     def __init__(self):
@@ -33,7 +35,7 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "_2Jrc-IHPAI _6-YEXCu4FK"}).text
                 print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
                                                                                          published_date))
-                SendToChannel(title, published_date, category, link)
+                # SendToChannel(title, published_date, category, link)
                 print("=" * 30)
                 return title, published_date
             elif 'article' in link:
@@ -42,10 +44,10 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "_2Jrc-IHPAI"}).text
                 print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
                                                                                          published_date))
-                SendToChannel(title, published_date, category, link)
+                # SendToChannel(title, published_date, category, link)
         except BaseException as e:
-            
-                config.debug(level=1, data=e)
+
+            config.debug(level=1, data=e)
 
     def performDataExtraction(self, links: list):
         DataFetcherQueue = queue.Queue()
@@ -55,6 +57,3 @@ class FindData(RequestDispatcher):
             DataFetcherThread.start()
             while threading.active_count() >= 20:
                 time.sleep(3)
-
-
-
