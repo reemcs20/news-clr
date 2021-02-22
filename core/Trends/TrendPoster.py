@@ -1,5 +1,4 @@
 import json
-
 from bs4 import BeautifulSoup
 
 from core.SearchEngine.Search import RequestDispatcher
@@ -29,7 +28,7 @@ class AJ_Trends(RequestDispatcher, ResultsSearch):
             self.AllTrends.get('aljazeera').append(dict(title=news_title, link=news_link))
 
 
-class BBC_Trends(RequestDispatcher,ResultsSearch):
+class BBC_Trends(RequestDispatcher, ResultsSearch):
     def __init__(self):
         self.TrendURL: str = 'https://www.bbc.com/arabic/mostread.json'
         self.trends: dict = self.MakeRequest(target=self.TrendURL, json=True).get('records')
@@ -45,6 +44,4 @@ class BBC_Trends(RequestDispatcher,ResultsSearch):
         for Trend in self.trends:
             title = Trend.get('promo').get('headlines').get('headline')
             link = Trend.get('promo').get('locators').get('assetUri')
-            self.AllTrends.get('bbc').append(dict(title=title,link=self.formURL(url=link)))
-
-
+            self.AllTrends.get('bbc').append(dict(title=title, link=self.formURL(url=link)))

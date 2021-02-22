@@ -1,7 +1,26 @@
-from core.Trends.TrendPoster import AJ_Trends,BBC_Trends
+import argparse
+
+from core.Trends.TrendPoster import AJ_Trends, BBC_Trends
 import json
+
+args = argparse.ArgumentParser()
+args.add_argument('-p', default=None, help="Prettify JSON", type=str, required=False)
+args_parser = args.parse_args()
+
 t = BBC_Trends()
 j = AJ_Trends()
 j.ExtractNews()
 t.ParseJson()
-print(json.dumps(t.AllTrends,indent=3,sort_keys=True))
+
+
+def PringJson():
+    if args_parser.p:
+        for news in t.AllTrends.get("bbc"):
+            print(news.get("title"))
+        for news in t.AllTrends.get("aljazeera"):
+            print(news.get("title"))
+    else:
+        ...
+
+
+print(json.dumps(t.AllTrends, indent=3, sort_keys=True))
