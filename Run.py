@@ -3,28 +3,26 @@ import multiprocessing
 import time
 
 from core.SearchEngine.Search import *
-from core.ext.Utiltiy import EchoResult
+
 start_time = time.time()
 args = argparse.ArgumentParser()
-args.add_argument('-q', default='ايران', help="a query for searching it", type=str, required=False)
-args.add_argument('-l', default='ar', help="Language of search options", type=str, required=False)
+args.add_argument('-q', help="a query for searching it", type=str, required=False)
+args.add_argument('-l', help="Language of search options", type=str, required=False)
 args_parser = args.parse_args()
 query: str = args_parser.q
 language: str = args_parser.l
 
 
-class ResultsSearch:
-    if language == 'ar':
-        AllTrends = dict(aljazeera=[], skynews=[], alarabiya=[], rt=[])
-    else:
-        AllTrends = dict(aljazeera=[], bbc=[], cnn=[], foxnews=[], alarabiya=[], rt=[])
+# class ResultsSearch:
+#     if language == 'ar':
+#         AllTrends = dict(aljazeera=[], skynews=[], alarabiya=[], rt=[])
+#     else:
+#         AllTrends = dict(aljazeera=[], bbc=[], cnn=[], foxnews=[], alarabiya=[], rt=[])
 
 
-collector = ResultsSearch()
-#########AR########
 if __name__ == '__main__':
     if language == 'ar':
-        sky_news = SkyNews(query=query, collector=collector)
+        sky_news = SkyNews(query=query)
         aljazeera = Aljazeera(query=query.encode('utf-8'), language=language)
         alarabiya = Alarabiya(query=query)
         rt = RT_SearchEngine(query=query)
@@ -41,9 +39,30 @@ if __name__ == '__main__':
         aljazeera_process.join()
         alarabiya_process.join()
         rt_process.join()
-        EchoResult().ReadJson()
-        print("Done! Taken Time:", time.time() - start_time)
+        # EchoResult().ReadJson()
+    else:
+        aljazeera = Aljazeera(query=query.encode('utf-8'), language=language)
+        foxnews = FoxNews_EN(query=query)
+        alarabiya = Alarabiya(query=query)
+        rt = RT_SearchEngine(query=query)
+        cnn = CNN()
+        aljazeera_process = multiprocessing.Process(target=aljazeera.getNewsLinks)
+        alarabiya_process = multiprocessing.Process(target=alarabiya.RunExtraction, args=(language,))
+        rt_process = multiprocessing.Process(target=rt.RunExtraction, args=(language,))
+        foxnews_process = multiprocessing.Process(target=foxnews.parseResults)
+        cnn_process = multiprocessing.Process(target=cnn.EN_CNN_Search, args=(query,))
 
+        aljazeera_process.start()
+        alarabiya_process.start()
+        cnn_process.start()
+        foxnews_process.start()
+        rt_process.start()
+        aljazeera_process.join()
+        alarabiya_process.join()
+        foxnews_process.join()
+        cnn_process.join()
+        rt_process.join()
+    print("Done! Taken Time:", time.time() - start_time)
 
 # cnn = CNN()
 

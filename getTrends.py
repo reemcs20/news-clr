@@ -13,14 +13,14 @@ j.ExtractNews()
 t.ParseJson()
 
 
-def PringJson():
+def PrintJson():
     if args_parser.p:
         for news in t.AllTrends.get("bbc"):
             print(news.get("title"))
         for news in t.AllTrends.get("aljazeera"):
             print(news.get("title"))
     else:
-        sys.stdout.write(json.dumps(t.AllTrends, indent=3, sort_keys=True))
+        print(json.dumps(t.AllTrends, indent=3, sort_keys=True))
 
 
-PringJson()
+PrintJson()

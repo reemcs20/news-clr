@@ -13,11 +13,11 @@ class FindData(RequestDispatcher):
     def __init__(self):
         self.ResultsData = {'alajazera': []}
 
-    def extractData(self, link: str) -> tuple:
+    def extractData(self, link: str,language) -> tuple:
 
         """method to extract title and tag"""
         try:
-            if 'english' in link:
+            if language == 'en':
                 text = self.MakeRequest(target=link)
                 soup = BeautifulSoup(text, 'html.parser')
                 title = soup.findAll("h1")[0].text
@@ -30,7 +30,6 @@ class FindData(RequestDispatcher):
                 # SendToChannel(title, published_date, category, link)
                 # return title, category
             else:
-                print("Arabic search")
                 text = self.MakeRequest(target=link)
                 soup = BeautifulSoup(text, 'html.parser')
                 title = soup.findAll("header", {"class": "article-header"})[0].h1.text
@@ -46,13 +45,13 @@ class FindData(RequestDispatcher):
 
             config.debug(level=1, data=e)
 
-    def performDataExtraction(self, links: list):
+    def performDataExtraction(self, links: list,language):
         try:
             DataFetcherQueue = queue.Queue()
             threads = []
             for link in links:
                 DataFetcherQueue.put(link)
-                DataFetcherThread = threading.Thread(target=self.extractData, args=(DataFetcherQueue.get(),))
+                DataFetcherThread = threading.Thread(target=self.extractData, args=(DataFetcherQueue.get(),language))
                 threads.append(DataFetcherThread)
             for thread_starter in threads:
                 thread_starter.start()

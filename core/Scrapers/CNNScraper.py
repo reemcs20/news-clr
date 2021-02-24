@@ -16,12 +16,15 @@ class FindData(RequestDispatcher):
         self.sourcePage = None
 
     def FindTags(self, target: dict) -> list:
-        tags_container = list()
-        soup = BeautifulSoup(self.sourcePage, 'html.parser')
-        tags = soup.find('ul', target)
-        for tag in tags.li.find_next_siblings():
-            tags_container.append(tag.text)
-        return tags_container
+        try:
+            tags_container = list()
+            soup = BeautifulSoup(self.sourcePage, 'html.parser')
+            tags = soup.find('ul', target)
+            for tag in tags.li.find_next_siblings():
+                tags_container.append(tag.text)
+            return tags_container
+        except BaseException as e:
+            print("Could not extract tags",e)
 
     def extractData(self, link: str) -> tuple:
         """method to extract title and tag"""
@@ -46,7 +49,7 @@ class FindData(RequestDispatcher):
                                                                                          published_date))
                 # SendToChannel(title, published_date, category, link)
         except BaseException as e:
-
+            print("52")
             config.debug(level=1, data=e)
 
     def performDataExtraction(self, links: list):

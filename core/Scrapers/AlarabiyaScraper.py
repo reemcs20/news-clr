@@ -17,12 +17,15 @@ class FindData(RequestDispatcher):
         self.ResultsData = {'alarabiya': []}
 
     def FindTags(self, target: dict) -> list:
-        tags_container = list()
-        soup = BeautifulSoup(self.sourcePage, 'html.parser')
-        tags = soup.find('ul', target)
-        for tag in tags.li.find_next_siblings():
-            tags_container.append(tag.text.strip())
-        return tags_container
+        try:
+            tags_container = list()
+            soup = BeautifulSoup(self.sourcePage, 'html.parser')
+            tags = soup.find('ul', target)
+            for tag in tags.li.find_next_siblings():
+                tags_container.append(tag.text.strip())
+            return tags_container
+        except BaseException as e:
+            return "Unknown"
 
     def extractData(self, link: str) -> tuple:
         """method to extract title and tag"""
@@ -32,9 +35,9 @@ class FindData(RequestDispatcher):
         try:
             # checks if the results are in English
             if '/english.' in link:
-                title = soup.find('h1').text
-                category = self.FindTags(target={"class": "tags-related"})
-                published_date = soup.find('div', {"class": "article-info"}).text.strip().split('\n')[1]
+                title = soup.find('h1').text.strip()
+                category = self.FindTags(target={"class": "tags"})
+                published_date = soup.find('span', {"class": "timeDate_element"}).text.strip().split('\n')[0]
                 self.ResultsData.get('alarabiya').append(
                     dict(title=title, category=category, published_date=published_date, link=link))
                 print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
@@ -54,10 +57,10 @@ class FindData(RequestDispatcher):
                 return title, category
         except AttributeError as e:
 
-            config.debug(level=1, data=e)
+            config.debug(level=1, data="Alarabyia extraction: {}".format(e))
         except BaseException as e:
 
-            config.debug(level=1, data=e)
+            config.debug(level=1, data="Alarabyia extraction: {}".format(e))
 
     def performDataExtraction(self, links: list):
         DataFetcherQueue = queue.Queue()

@@ -33,12 +33,15 @@ class FindData(RequestDispatcher):
         self.Results = {'rt': []}
 
     def FindTags(self, target: dict) -> list:
-        tags_container = list()
-        soup = BeautifulSoup(self.sourcePage, 'html.parser')
-        tags = soup.find('div', target)
-        for tag in tags.a.find_next_siblings():
-            tags_container.append(tag.text.strip())
-        return tags_container
+        try:
+            tags_container = list()
+            soup = BeautifulSoup(self.sourcePage, 'html.parser')
+            tags = soup.find('div', target)
+            for tag in tags.a.find_next_siblings():
+                tags_container.append(tag.text.strip())
+            return tags_container
+        except BaseException as e:
+            print("Russia Today",e)
 
     def extractData(self, link: str) -> tuple:
         """method to extract title and tag"""

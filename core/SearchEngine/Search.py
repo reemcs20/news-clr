@@ -54,9 +54,8 @@ class Searcher:
 
 
 class SkyNews(RequestDispatcher):
-    def __init__(self, query: str, collector):
+    def __init__(self, query: str):
 
-        self.collector = collector
         self.Results = {'SkyNews': []}
         self.query = query.strip()
         self.AR_searchEngine = 'https://api.skynewsarabia.com//rest/v2/search/text.json?deviceType=DESKTOP&from' \
@@ -122,9 +121,10 @@ class RT_SearchEngine(RequestDispatcher):
         news = soup.findAll('a', {'class': 'link link_hover'})
         for link in news:
             if self.isLink(link.text):
+                links.append(link.text)
                 if config.DEBUG:
                     print(link.text)
-                links.append(link.text)
+
         self.Links.extend(links)
         rt_scraper.performDataExtraction(self.Links)
         return links
@@ -204,7 +204,7 @@ class Aljazeera(Searcher, RequestDispatcher):
                     if config.DEBUG:
                         print(news_url.get('title'))
                         print(news_url.get('link'))
-                aljazera.performDataExtraction(self.newsLinks)
+                aljazera.performDataExtraction(self.newsLinks,self.lang)
             else:
                 result = self.MakeRequest(target=self.API, json=True, headers=self.EN_headers)
                 for news_url in result.get('data').get('searchPosts').get('items'):
@@ -213,7 +213,7 @@ class Aljazeera(Searcher, RequestDispatcher):
                         print(news_url.get('title'))
                         print(news_url.get('link'))
 
-                # aljazera.performDataExtraction(self.newsLinks)
+                aljazera.performDataExtraction(self.newsLinks,self.lang)
         except BaseException as e:
             config.debug(level=1, data=e)
 
@@ -300,26 +300,26 @@ class Alarabiya(RequestDispatcher):
             self.EN_getNewsLinks()
 
 
-class BBC(Searcher):
-    """BBC search engine using google service"""
-
-    def __init__(self, query: str):
-        self.query = query
-        self.newsLinks = []
-
-    @staticmethod
-    def makeDorkSearch(query: str) -> str:
-        """Make the search operation to best match """
-        return '"bbc.com" {}'.format(query)
-
-    def getNewsLinks(self: str) -> None:
-        """Gather response links and store them into list"""
-        results = self.performSearch(query=self.makeDorkSearch(self.query), tld='net')
-        for newsLink in results:
-            if self.Ensure_Rules(newsLink, 'bbc.com'):
-                if config.DEBUG:
-                    print("Rules matched==>", newsLink)
-                self.newsLinks.append(newsLink)
+# class BBC(Searcher):
+#     """BBC search engine using google service"""
+#
+#     def __init__(self, query: str):
+#         self.query = query
+#         self.newsLinks = []
+#
+#     @staticmethod
+#     def makeDorkSearch(query: str) -> str:
+#         """Make the search operation to best match """
+#         return '"bbc.com" {}'.format(query)
+#
+#     def getNewsLinks(self: str) -> None:
+#         """Gather response links and store them into list"""
+#         results = self.performSearch(query=self.makeDorkSearch(self.query), tld='net')
+#         for newsLink in results:
+#             if self.Ensure_Rules(newsLink, 'bbc.com'):
+#                 if config.DEBUG:
+#                     print("Rules matched==>", newsLink)
+#                 self.newsLinks.append(newsLink)
 
 
 class FoxNews_EN(RequestDispatcher, Searcher):
@@ -355,11 +355,13 @@ class FoxNews_EN(RequestDispatcher, Searcher):
                 news_link = item.get('link')
                 news_title = item.get('title')
                 news_published_date = item.get('pagemap').get('metatags')[0].get('dcterms.created')
+                news_tags = None
                 # Get news category using two possible dict keys
                 if item.get('pagemap').get('metatags')[0].get('classification-tags'):
                     news_tags = item.get('pagemap').get('metatags')[0].get('classification-tags').split(',')
                 else:
-                    news_tags = item.get('pagemap').get('metatags')[0].get('classification-isa').split(',')
+                    if hasattr(item.get('pagemap').get('metatags')[0].get('classification-isa'),'split'):
+                        news_tags = item.get('pagemap').get('metatags')[0].get('classification-isa').split(',')
                 # Print data to user
                 title = news_title
                 published_date = news_published_date

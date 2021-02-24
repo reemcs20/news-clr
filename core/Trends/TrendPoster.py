@@ -1,6 +1,5 @@
 import json
 from bs4 import BeautifulSoup
-
 from core.SearchEngine.Search import RequestDispatcher
 
 
@@ -11,6 +10,7 @@ class ResultsSearch:
 class AJ_Trends(RequestDispatcher, ResultsSearch):
     def __init__(self):
         # self.AllTrends = {'aljazeera': []}
+
         self.TrendURL = 'https://www.aljazeera.net'
         self.trendsData = self.MakeRequest(target=self.TrendURL, json=False)
 
