@@ -334,7 +334,7 @@ class FoxNews_EN(RequestDispatcher, Searcher):
             response = self.MakeRequest(target=self.API, json=False)  # creating HTTP req to API
             print(response)
             data_json = response.split("(", 1)[1].strip(")")  # removing the () from response
-            parsed_json = json.loads(data_json.removesuffix(');'))  # remove suffix ');' and convert to json
+            parsed_json = json.loads(data_json.strip(');'))  # remove suffix ');' and convert to json
             return parsed_json
         except BaseException as e:
 
