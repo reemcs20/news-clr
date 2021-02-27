@@ -66,31 +66,5 @@ if __name__ == '__main__':
         rt_process.join()
         resultsManager.ReadJson()
         sys.stdout.write(str(resultsManager.AllNews))
-    print("Done! Taken Time:", time.time() - start_time)
-
-# cnn = CNN()
-
-# rt = RT_SearchEngine(query=query)
-
-# if __name__ == "__main__":
-# # bbc_process_google = multiprocessing.Process(target=bbc.getNewsLinks)
-# cnn_process_google = multiprocessing.Process(target=cnn.EN_CNN_Search, args=(query,))
-# aljazeera_process_google = multiprocessing.Process(target=aljazeera.getNewsLinks)
-# alarabiya_process = multiprocessing.Process(target=alarabiya.RunExtraction, args=(language,))
-# rt_process = multiprocessing.Process(target=rt.RunExtraction, args=(language,))
-#
-# # creating processes
-# rt_process.start()
-# alarabiya_process.start()
-# # starting processes
-# # bbc_process_google.start()
-# cnn_process_google.start()
-# aljazeera_process_google.start()
-# rt_process.join()
-# aljazeera_process_google.join()
-# cnn_process_google.join()
-# # bbc_process_google.join()
-# alarabiya_process.join()
-#
-# print("After all search engines have ended")
-# # both processes finished
+    if config.DEBUG:
+        print("Done! Taken Time:", time.time() - start_time)

@@ -38,8 +38,8 @@ class FindData(RequestDispatcher):
                 title = soup.find('h1', {"class": "heading"}).text
                 category = self.FindTags({"class": 'news-tags news-tags_article'})
                 published_date = soup.find('span', {"class": "date"}).text
-                print("RT Search Engine")
-                print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
+                if config.DEBUG:
+                    print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
 
                 self.Results.get("rt").append(
                     dict(title=title, category=category, published_date=published_date, link=link))
@@ -47,11 +47,11 @@ class FindData(RequestDispatcher):
 
                 return title, category
             else:
-                print("RT Search Engine")
                 title = soup.find('h1', {"class": 'article__heading'}).text.strip()
                 published_date = soup.find('span', {"class": 'date date_article-header'}).text
                 category = self.FindTags({"class": 'tags-trends'})
-                print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
+                if config.DEBUG:
+                    print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
                 self.Results.get("rt").append(
                     dict(title=title, category=category, published_date=published_date, link=link))
                 # SendToChannel(title, published_date, category, link)
