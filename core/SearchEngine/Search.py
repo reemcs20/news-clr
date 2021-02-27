@@ -2,7 +2,7 @@ import datetime
 import json
 import threading
 
-from googlesearch import search
+# from googlesearch import search
 import requests
 from bs4 import BeautifulSoup
 from core.TelegramBot.TelegramSender import SendToChannel
@@ -22,17 +22,17 @@ aljazera = AjScrapper()
 class Searcher:
     """A base class to search on google"""
 
-    @staticmethod
-    def performSearch(query, tld) -> list:
-        """method to perform a search operation and returns a list of links"""
-        try:
-            links = []  # a list to store links from google
-            results = search(query=query, num=5, stop=10, tld=tld)
-            for link in results:
-                links.append(link)  # add links to list
-            return links
-        except BaseException as e:
-            config.debug(level=1, data=e)
+    # @staticmethod
+    # def performSearch(query, tld) -> list:
+    #     """method to perform a search operation and returns a list of links"""
+    #     try:
+    #         links = []  # a list to store links from google
+    #         results = search(query=query, num=5, stop=10, tld=tld)
+    #         for link in results:
+    #             links.append(link)  # add links to list
+    #         return links
+    #     except BaseException as e:
+    #         config.debug(level=1, data=e)
 
     def Ensure_netloc(self, sch: str, target: str, exclude: str) -> bool:
         """
