@@ -342,7 +342,6 @@ class FoxNews_EN(RequestDispatcher, Searcher):
     def parseResults(self):
         """
         A method to parse the json object to actual data and send the results to telegram channel
-
         """
         try:
             # json object from API response
