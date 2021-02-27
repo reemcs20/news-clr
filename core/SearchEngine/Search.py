@@ -77,8 +77,6 @@ class SkyNews(RequestDispatcher):
                                            data.get('urlFriendlySuffix'))
                 self.Results.get("SkyNews").append(
                     dict(title=title, published_date=published_date, category=category, link=link))
-                self.collector.AllTrends.get('skynews').append(
-                    dict(title=title, published_date=published_date, category=category, link=link))
                 if config.DEBUG:
                     print("title: ", title)
                     print("published date: ", published_date)
