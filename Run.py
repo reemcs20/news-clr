@@ -41,7 +41,7 @@ if __name__ == '__main__':
         alarabiya_process.join()
         rt_process.join()
         resultsManager.ReadJson()
-        sys.stdout.write(resultsManager.AllNews)
+        sys.stdout.write(str(resultsManager.AllNews))
     else:
         aljazeera = Aljazeera(query=query.encode('utf-8'), language=language)
         foxnews = FoxNews_EN(query=query)
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         cnn_process.join()
         rt_process.join()
         resultsManager.ReadJson()
-        sys.stdout.write(resultsManager.AllNews)
+        sys.stdout.write(str(resultsManager.AllNews))
     print("Done! Taken Time:", time.time() - start_time)
 
 # cnn = CNN()
