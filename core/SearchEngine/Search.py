@@ -326,8 +326,7 @@ class FoxNews_EN(RequestDispatcher, Searcher):
     def __init__(self, query):
         self.Results = {'foxnews': []}
         self.query = query
-        self.API = f"https://api.foxnews.com/search/web?q={self.query}+-filetype:json+-filetype:json+more:pagemap" \
-                   f":metatags-prism.section&siteSearch=foxnews.com&siteSearchFilter=i&callback=__jp0"
+        self.API = f"https://api.foxnews.com/search/web?q={self.query}+-filetype:json+-filetype:json+more:pagemap:metatags-prism.section&siteSearch=foxnews.com&siteSearchFilter=i&callback=__jp0"
 
     def convertToJson(self) -> dict:
         """A method to manipulate response and convert it from string into dictionary"""
