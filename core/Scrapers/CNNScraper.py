@@ -36,20 +36,20 @@ class FindData(RequestDispatcher):
                 title = soup.find('h1', {"class": "Q2kXR_hT9c flipboard-title"}).text
                 category = self.FindTags({'class': '_38q8dhe3Fx'})
                 published_date = soup.find('div', {"class": "_2Jrc-IHPAI _6-YEXCu4FK"}).text
-                print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
+                if config.DEBUG:
+                    print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
                                                                                          published_date))
                 # SendToChannel(title, published_date, category, link)
-                print("=" * 30)
                 return title, published_date
             elif 'article' in link:
                 title = soup.find('h1', {"class": "_2JPm2UuC56 flipboard-title"}).text
                 category = self.FindTags({'class': 'AsCeVPiOdE'})
                 published_date = soup.find('div', {"class": "_2Jrc-IHPAI"}).text
-                print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
+                if config.DEBUG:
+                    print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
                                                                                          published_date))
                 # SendToChannel(title, published_date, category, link)
         except BaseException as e:
-            print("52")
             config.debug(level=1, data=e)
 
     def performDataExtraction(self, links: list):

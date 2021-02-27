@@ -124,7 +124,8 @@ class RT_SearchEngine(RequestDispatcher):
                     print(link.text)
 
         self.Links.extend(links)
-        rt_scraper.performDataExtraction(self.Links)
+        if len(self.Links) > 1:
+            rt_scraper.performDataExtraction(self.Links)
         return links
 
     def AR_extractNewsLinks(self):
@@ -135,6 +136,8 @@ class RT_SearchEngine(RequestDispatcher):
             print('https://arabic.rt.com' + link.get_attribute_list('href')[0])
             links.append('https://arabic.rt.com' + link.get_attribute_list('href')[0])
         self.Links.extend(links)
+        if len(self.Links) > 1:
+            rt_scraper.performDataExtraction(self.Links)
         rt_scraper.performDataExtraction(self.Links)
         return links
 

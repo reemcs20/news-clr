@@ -40,7 +40,8 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('span', {"class": "timeDate_element"}).text.strip().split('\n')[0]
                 self.ResultsData.get('alarabiya').append(
                     dict(title=title, category=category, published_date=published_date, link=link))
-                print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
+                if config.DEBUG:
+                    print("Title: {}\nCategory: {}\nPublished Date: {}".format(title, category, published_date))
                 # SendToChannel(title, published_date, category, link)
 
                 return title, category
@@ -51,7 +52,8 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "timeDate"}).time.text
                 self.ResultsData.get('alarabiya').append(
                     dict(title=title, category=category, published_date=published_date, link=link))
-                print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: [Visit]({})".format(title, category,
+                if config.DEBUG:
+                    print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: [Visit]({})".format(title, category,
                                                                                                 published_date, link))
                 # SendToChannel(title, published_date, category, link)
                 return title, category
