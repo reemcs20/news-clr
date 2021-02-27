@@ -1,9 +1,10 @@
 import argparse
 import multiprocessing
+import sys
 import time
 
 from core.SearchEngine.Search import *
-
+from core.ext.Utiltiy import EchoResult
 start_time = time.time()
 args = argparse.ArgumentParser()
 args.add_argument('-q', help="a query for searching it", type=str, required=False)
@@ -11,7 +12,7 @@ args.add_argument('-l', help="Language of search options", type=str, required=Fa
 args_parser = args.parse_args()
 query: str = args_parser.q
 language: str = args_parser.l
-
+resultsManager = EchoResult()
 
 # class ResultsSearch:
 #     if language == 'ar':
@@ -39,7 +40,8 @@ if __name__ == '__main__':
         aljazeera_process.join()
         alarabiya_process.join()
         rt_process.join()
-        # EchoResult().ReadJson()
+        resultsManager.ReadJson()
+        sys.stdout.write(resultsManager.AllNews)
     else:
         aljazeera = Aljazeera(query=query.encode('utf-8'), language=language)
         foxnews = FoxNews_EN(query=query)
@@ -62,6 +64,8 @@ if __name__ == '__main__':
         foxnews_process.join()
         cnn_process.join()
         rt_process.join()
+        resultsManager.ReadJson()
+        sys.stdout.write(resultsManager.AllNews)
     print("Done! Taken Time:", time.time() - start_time)
 
 # cnn = CNN()
