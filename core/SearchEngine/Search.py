@@ -332,7 +332,6 @@ class FoxNews_EN(RequestDispatcher, Searcher):
         """A method to manipulate response and convert it from string into dictionary"""
         try:
             response = self.MakeRequest(target=self.API, json=False)  # creating HTTP req to API
-            print(response)
             data_json = response.split("(", 1)[1].strip(")")  # removing the () from response
             parsed_json = json.loads(data_json.strip(');'))  # remove suffix ');' and convert to json
             return parsed_json
@@ -345,36 +344,39 @@ class FoxNews_EN(RequestDispatcher, Searcher):
         A method to parse the json object to actual data and send the results to telegram channel
 
         """
-        # json object from API response
-        json = self.convertToJson()
-        # iterate in news list
-        for item in json.get('items'):
-            # checks if the link is a news and not anything else
-            if not self.Ensure_Rules(link=item.get('link'), rule='category'):
-                # gather news metadata from API response
-                news_link = item.get('link')
-                news_title = item.get('title')
-                news_published_date = item.get('pagemap').get('metatags')[0].get('dcterms.created')
-                news_tags = None
-                # Get news category using two possible dict keys
-                if item.get('pagemap').get('metatags')[0].get('classification-tags'):
-                    news_tags = item.get('pagemap').get('metatags')[0].get('classification-tags').split(',')
-                else:
-                    if hasattr(item.get('pagemap').get('metatags')[0].get('classification-isa'),'split'):
-                        news_tags = item.get('pagemap').get('metatags')[0].get('classification-isa').split(',')
-                # Print data to user
-                title = news_title
-                published_date = news_published_date
-                link = news_link
-                category = news_tags
-                self.Results.get("foxnews").append(
-                    dict(title=title, published_date=published_date, category=category, link=link))
-                if config.DEBUG:
+        try:
+            # json object from API response
+            json = self.convertToJson()
+            # iterate in news list
+            for item in json.get('items'):
+                # checks if the link is a news and not anything else
+                if not self.Ensure_Rules(link=item.get('link'), rule='category'):
+                    # gather news metadata from API response
+                    news_link = item.get('link')
+                    news_title = item.get('title')
+                    news_published_date = item.get('pagemap').get('metatags')[0].get('dcterms.created')
+                    news_tags = None
+                    # Get news category using two possible dict keys
+                    if item.get('pagemap').get('metatags')[0].get('classification-tags'):
+                        news_tags = item.get('pagemap').get('metatags')[0].get('classification-tags').split(',')
+                    else:
+                        if hasattr(item.get('pagemap').get('metatags')[0].get('classification-isa'),'split'):
+                            news_tags = item.get('pagemap').get('metatags')[0].get('classification-isa').split(',')
+                    # Print data to user
+                    title = news_title
+                    published_date = news_published_date
+                    link = news_link
+                    category = news_tags
+                    self.Results.get("foxnews").append(
+                        dict(title=title, published_date=published_date, category=category, link=link))
                     if config.DEBUG:
-                        print("Link", news_link)
-                        print("Title", news_title)
-                        print("Categories", news_tags)
-                        print("Published date:", news_published_date)
+                        if config.DEBUG:
+                            print("Link", news_link)
+                            print("Title", news_title)
+                            print("Categories", news_tags)
+                            print("Published date:", news_published_date)
+        except BaseException as e:
+            print(e)
         write_json(config.EnvironmentPath(), 'foxnews', self.Results)
         # Send news to telegram channel
         # threading.Thread(target=SendToChannel, args=(title, published_date, category, link)).start()
