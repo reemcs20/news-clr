@@ -332,6 +332,7 @@ class FoxNews_EN(RequestDispatcher, Searcher):
         """A method to manipulate response and convert it from string into dictionary"""
         try:
             response = self.MakeRequest(target=self.API, json=False)  # creating HTTP req to API
+            print(response)
             data_json = response.split("(", 1)[1].strip(")")  # removing the () from response
             parsed_json = json.loads(data_json.removesuffix(');'))  # remove suffix ');' and convert to json
             return parsed_json
