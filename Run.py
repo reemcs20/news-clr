@@ -5,7 +5,8 @@ import time
 
 from core.SearchEngine.Search import *
 from core.ext.Utiltiy import EchoResult
-start_time = time.time()
+
+start_time = time.time()  # the time of start to be calculated later with the end time
 args = argparse.ArgumentParser()
 args.add_argument('-q', help="a query for searching it", type=str, required=False)
 args.add_argument('-l', help="Language of search options", type=str, required=False)
@@ -14,14 +15,11 @@ query: str = args_parser.q
 language: str = args_parser.l
 resultsManager = EchoResult()
 
-# class ResultsSearch:
-#     if language == 'ar':
-#         AllTrends = dict(aljazeera=[], skynews=[], alarabiya=[], rt=[])
-#     else:
-#         AllTrends = dict(aljazeera=[], bbc=[], cnn=[], foxnews=[], alarabiya=[], rt=[])
-
-
 if __name__ == '__main__':
+    """
+    determine if the search operation is arabic or english 
+    some search engines are for AR or the opposite ir BOTH.
+    """
     if language == 'ar':
         sky_news = SkyNews(query=query)
         aljazeera = Aljazeera(query=query.encode('utf-8'), language=language)
@@ -67,4 +65,5 @@ if __name__ == '__main__':
         resultsManager.ReadJson()
         sys.stdout.write(str(resultsManager.AllNews))
     if config.DEBUG:
+        "Calculate how long did the program take"
         print("Done! Taken Time:", time.time() - start_time)

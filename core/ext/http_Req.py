@@ -24,7 +24,7 @@ class RequestDispatcher:
             req = requests.get(target, headers=headers)  # send the request
             if req.status_code == 200:  # ensure request went successfully
                 if json:  # is  the response in json type
-                    return req.json()
-                return req.text
+                    return req.json() # return Response as Json object
+                return req.text # return Response as string
         except BaseException as e:
             config.debug(level=1, data=e)

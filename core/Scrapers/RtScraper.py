@@ -1,10 +1,8 @@
-import requests
+import queue
+import threading
 
 from bs4 import BeautifulSoup
-import threading
-import queue
 
-from core.TelegramBot.TelegramSender import SendToChannel
 from core.appConfig import AppConfigurations
 from core.ext.Utiltiy import write_json
 from core.ext.http_Req import RequestDispatcher
@@ -74,6 +72,6 @@ class FindData(RequestDispatcher):
                 thread_start.start()
             for thread_join in threads:
                 thread_join.join()
-        except  BaseException as e:
+        except BaseException as e:
             print(e)
         write_json(config.EnvironmentPath(), 'rt', self.Results)

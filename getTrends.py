@@ -1,8 +1,8 @@
 import argparse
+import json
 
 from core.Trends.TrendPoster import AJ_Trends, BBC_Trends
-import json
-import sys
+
 args = argparse.ArgumentParser()
 args.add_argument('-p', default=None, help="Prettify JSON", type=str, required=False)
 args_parser = args.parse_args()

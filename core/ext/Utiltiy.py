@@ -60,7 +60,7 @@ class EchoResult:
                     value = list(data.items())[0][1]
                     self.AllNews.update({key: value})  # write data to all news collector
                 f.close()  # close file
-                self.RemoveTempFile(os.path.join(self.FilePath, file)) # delete file after reading
+                self.RemoveTempFile(os.path.join(self.FilePath, file))  # delete file after reading
         except BaseException as e:
             print(e)
 

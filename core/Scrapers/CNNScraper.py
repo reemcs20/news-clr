@@ -1,11 +1,10 @@
+import queue
+import threading
 import time
 
-from core.SearchEngine.Search import RequestDispatcher
 from bs4 import BeautifulSoup
-import threading
-import queue
 
-from core.TelegramBot.TelegramSender import SendToChannel
+from core.SearchEngine.Search import RequestDispatcher
 from core.appConfig import AppConfigurations
 
 config = AppConfigurations()
@@ -24,7 +23,7 @@ class FindData(RequestDispatcher):
                 tags_container.append(tag.text)
             return tags_container
         except BaseException as e:
-            print("Could not extract tags",e)
+            print("Could not extract tags", e)
 
     def extractData(self, link: str) -> tuple:
         """method to extract title and tag"""
@@ -38,7 +37,7 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "_2Jrc-IHPAI _6-YEXCu4FK"}).text
                 if config.DEBUG:
                     print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
-                                                                                         published_date))
+                                                                                             published_date))
                 # SendToChannel(title, published_date, category, link)
                 return title, published_date
             elif 'article' in link:
@@ -47,7 +46,7 @@ class FindData(RequestDispatcher):
                 published_date = soup.find('div', {"class": "_2Jrc-IHPAI"}).text
                 if config.DEBUG:
                     print("Data For: {}\nTitle: {}\nCategory: {}\nPublished Date: {}".format(link, title, category,
-                                                                                         published_date))
+                                                                                             published_date))
                 # SendToChannel(title, published_date, category, link)
         except BaseException as e:
             config.debug(level=1, data=e)

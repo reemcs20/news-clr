@@ -1,16 +1,15 @@
-import datetime
 import json
 import threading
 
 # from googlesearch import search
-import requests
 from bs4 import BeautifulSoup
+
+from core.Scrapers.AlarabiyaScraper import FindData as AlarabiyaScrapper
+from core.Scrapers.AljazeeraScrapper import FindData as AjScrapper
+from core.Scrapers.RtScraper import FindData as RT_Scraper
 from core.TelegramBot.TelegramSender import SendToChannel
 from core.appConfig import AppConfigurations
 from core.ext.Utiltiy import write_json
-from core.Scrapers.RtScraper import FindData as RT_Scraper
-from core.Scrapers.AlarabiyaScraper import FindData as AlarabiyaScrapper
-from core.Scrapers.AljazeeraScrapper import FindData as AjScrapper
 from core.ext.http_Req import RequestDispatcher
 
 config = AppConfigurations()
@@ -34,7 +33,8 @@ class Searcher:
     #     except BaseException as e:
     #         config.debug(level=1, data=e)
 
-    def Ensure_netloc(self, sch: str, target: str, exclude: str) -> bool:
+    @staticmethod
+    def Ensure_netloc(sch: str, target: str, exclude: str) -> bool:
         """
         check if the target contains a certain part of string
         :param exclude: value must not be in target url
@@ -44,7 +44,8 @@ class Searcher:
         """
         return sch in target and exclude not in target
 
-    def Ensure_Rules(self, link: str, rule: str) -> bool:
+    @staticmethod
+    def Ensure_Rules(link: str, rule: str) -> bool:
         """
         a method to make sure the provided phrase contains the rule
         :param link: a link from search results
@@ -60,10 +61,10 @@ class SkyNews(RequestDispatcher):
         self.query = query.strip()
         self.AR_searchEngine = 'https://api.skynewsarabia.com//rest/v2/search/text.json?deviceType=DESKTOP&from' \
                                '=&offset=36&pageSize=25&q={}&showEpisodes=true&sort=RELEVANCE&supportsInfographic' \
-                               '=true&to= '.format(
-            self.query)
+                               '=true&to= '.format(self.query)
 
-    def CreateNewsLink(self, news_id, sectionUrl, urlFriendlySuffix):
+    @staticmethod
+    def CreateNewsLink(news_id, sectionUrl, urlFriendlySuffix):
         return 'https://www.skynewsarabia.com' + sectionUrl + '/' + news_id + '-' + urlFriendlySuffix
 
     def RunExtraction(self, language: str = 'ar') -> str:
@@ -110,7 +111,8 @@ class RT_SearchEngine(RequestDispatcher):
             response = self.MakeRequest(target=self.EN_searchEngineLink + self.query)
             return response
 
-    def isLink(self, link: str) -> bool:
+    @staticmethod
+    def isLink(link: str) -> bool:
         return str(link).strip().startswith('http')
 
     def EN_extractNewsLinks(self):
@@ -205,7 +207,7 @@ class Aljazeera(Searcher, RequestDispatcher):
                     if config.DEBUG:
                         print(news_url.get('title'))
                         print(news_url.get('link'))
-                aljazera.performDataExtraction(self.newsLinks,self.lang)
+                aljazera.performDataExtraction(self.newsLinks, self.lang)
             else:
                 result = self.MakeRequest(target=self.API, json=True, headers=self.EN_headers)
                 for news_url in result.get('data').get('searchPosts').get('items'):
@@ -214,7 +216,7 @@ class Aljazeera(Searcher, RequestDispatcher):
                         print(news_url.get('title'))
                         print(news_url.get('link'))
 
-                aljazera.performDataExtraction(self.newsLinks,self.lang)
+                aljazera.performDataExtraction(self.newsLinks, self.lang)
         except BaseException as e:
             config.debug(level=1, data=e)
 
@@ -263,7 +265,8 @@ class Alarabiya(RequestDispatcher):
         self.SearchEngine = "https://www.alarabiya.net/tools/search?query={}".format(query)
         self.ENSearchEngine = "https://english.alarabiya.net/tools/search?query={}".format(query)
 
-    def CombineURL(self, path: str) -> str:
+    @staticmethod
+    def CombineURL(path: str) -> str:
         return 'https://www.alarabiya.net' + path
 
     def AR_getNewsLinks(self) -> list:
@@ -346,9 +349,9 @@ class FoxNews_EN(RequestDispatcher, Searcher):
         """
         try:
             # json object from API response
-            json = self.convertToJson()
+            json_data = self.convertToJson()
             # iterate in news list
-            for item in json.get('items'):
+            for item in json_data.get('items'):
                 # checks if the link is a news and not anything else
                 if not self.Ensure_Rules(link=item.get('link'), rule='category'):
                     # gather news metadata from API response
@@ -360,7 +363,7 @@ class FoxNews_EN(RequestDispatcher, Searcher):
                     if item.get('pagemap').get('metatags')[0].get('classification-tags'):
                         news_tags = item.get('pagemap').get('metatags')[0].get('classification-tags').split(',')
                     else:
-                        if hasattr(item.get('pagemap').get('metatags')[0].get('classification-isa'),'split'):
+                        if hasattr(item.get('pagemap').get('metatags')[0].get('classification-isa'), 'split'):
                             news_tags = item.get('pagemap').get('metatags')[0].get('classification-isa').split(',')
                     # Print data to user
                     title = news_title

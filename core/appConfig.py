@@ -12,7 +12,7 @@ class AppConfigurations:
     @staticmethod
     def Error_Register(data):
         try:
-            with open('errorlog', '+a') as f:
+            with open('error_log', '+a') as f:
                 f.writelines(data + '\n')
                 f.close()
         except IOError:

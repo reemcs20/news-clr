@@ -1,7 +1,8 @@
-from bs4 import BeautifulSoup
-import threading
 import queue
-from core.TelegramBot.TelegramSender import SendToChannel
+import threading
+
+from bs4 import BeautifulSoup
+
 from core.appConfig import AppConfigurations
 from core.ext.Utiltiy import write_json
 from core.ext.http_Req import RequestDispatcher
@@ -13,7 +14,7 @@ class FindData(RequestDispatcher):
     def __init__(self):
         self.ResultsData = {'alajazera': []}
 
-    def extractData(self, link: str,language) -> tuple:
+    def extractData(self, link: str, language) -> tuple:
 
         """method to extract title and tag"""
         try:
@@ -27,7 +28,7 @@ class FindData(RequestDispatcher):
                     dict(title=title, category=category, published_date=published_date, link=link))
                 if config.DEBUG:
                     print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: @Aljazeera".format(title, category,
-                                                                                               published_date))
+                                                                                                   published_date))
                 # SendToChannel(title, published_date, category, link)
                 # return title, category
             else:
@@ -40,20 +41,20 @@ class FindData(RequestDispatcher):
                     dict(title=title, category=category, published_date=published_date, link=link))
                 if config.DEBUG:
                     print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: @Aljazeera".format(title, category,
-                                                                                               published_date))
+                                                                                                   published_date))
                 # SendToChannel(title, published_date, category, link)
                 return title, category
         except BaseException as e:
 
             config.debug(level=1, data=e)
 
-    def performDataExtraction(self, links: list,language):
+    def performDataExtraction(self, links: list, language):
         try:
             DataFetcherQueue = queue.Queue()
             threads = []
             for link in links:
                 DataFetcherQueue.put(link)
-                DataFetcherThread = threading.Thread(target=self.extractData, args=(DataFetcherQueue.get(),language))
+                DataFetcherThread = threading.Thread(target=self.extractData, args=(DataFetcherQueue.get(), language))
                 threads.append(DataFetcherThread)
             for thread_starter in threads:
                 thread_starter.start()

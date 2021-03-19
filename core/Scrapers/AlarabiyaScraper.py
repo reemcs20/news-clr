@@ -1,9 +1,8 @@
 import queue
 import threading
 
-import requests
 from bs4 import BeautifulSoup
-from core.TelegramBot.TelegramSender import SendToChannel
+
 from core.appConfig import AppConfigurations
 from core.ext.Utiltiy import write_json
 from core.ext.http_Req import RequestDispatcher
@@ -16,7 +15,7 @@ class FindData(RequestDispatcher):
         self.sourcePage = None
         self.ResultsData = {'alarabiya': []}
 
-    def FindTags(self, target: dict) -> list:
+    def FindTags(self, target: dict) -> [list, str]:
         try:
             tags_container = list()
             soup = BeautifulSoup(self.sourcePage, 'html.parser')
@@ -24,7 +23,7 @@ class FindData(RequestDispatcher):
             for tag in tags.li.find_next_siblings():
                 tags_container.append(tag.text.strip())
             return tags_container
-        except BaseException as e:
+        except BaseException:
             return "Unknown"
 
     def extractData(self, link: str) -> tuple:
@@ -54,7 +53,8 @@ class FindData(RequestDispatcher):
                     dict(title=title, category=category, published_date=published_date, link=link))
                 if config.DEBUG:
                     print("Title: {}\nCategory: {}\nPublished Date: {}\nSource: [Visit]({})".format(title, category,
-                                                                                                published_date, link))
+                                                                                                    published_date,
+                                                                                                    link))
                 # SendToChannel(title, published_date, category, link)
                 return title, category
         except AttributeError as e:
