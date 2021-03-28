@@ -7,6 +7,10 @@ class ResultsSearch:
     AllTrends = {'aljazeera': [], 'bbc': []}
 
 
+class EN_Alarbya(RequestDispatcher, ResultsSearch):
+    ...
+
+
 class AJ_Trends(RequestDispatcher, ResultsSearch):
     """A class to scrape Trends from Aljazeera Platform"""
 
@@ -43,13 +47,6 @@ class BBC_Trends(RequestDispatcher, ResultsSearch):
         combine a url with the trend link
         """
         return 'https://www.bbc.com' + url
-
-    def __En_Trends(self):
-        # These variables refers to html code for accessing the actual data from source page
-        # the returned value is a LIST
-        first_row = {'class':'media-list'}
-        Second_row = {'class':'media-list media-list--fixed-height'}
-        Third_row = {'class':'media-list media-list--fixed-height'}
 
     def ParseJson(self):
         for Trend in self.trends:
