@@ -13,6 +13,7 @@ class RequestDispatcher:
     def MakeRequest(target: str, json=False, headers=None) -> str:
         """
 
+        :param cookie: cookie if necessary
         :param target: the actual URL to make request to
         :param json: boolean argument to tell the function the response is json
         :param headers: if true the headers will be shipped with request
