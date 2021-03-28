@@ -8,9 +8,9 @@ class ResultsSearch:
 
 
 class AJ_Trends(RequestDispatcher, ResultsSearch):
-    def __init__(self):
-        # self.AllTrends = {'aljazeera': []}
+    """A class to scrape Trends from Aljazeera Platform"""
 
+    def __init__(self):
         self.TrendURL = 'https://www.aljazeera.net'
         self.trendsData = self.MakeRequest(target=self.TrendURL, json=False)
 
@@ -29,6 +29,10 @@ class AJ_Trends(RequestDispatcher, ResultsSearch):
 
 
 class BBC_Trends(RequestDispatcher, ResultsSearch):
+    """
+    A class to scrape Trends from BBC Platform
+    """
+
     def __init__(self):
         self.TrendURL: str = 'https://www.bbc.com/arabic/mostread.json'
         self.trends: dict = self.MakeRequest(target=self.TrendURL, json=True).get('records')
@@ -39,6 +43,13 @@ class BBC_Trends(RequestDispatcher, ResultsSearch):
         combine a url with the trend link
         """
         return 'https://www.bbc.com' + url
+
+    def __En_Trends(self):
+        # These variables refers to html code for accessing the actual data from source page
+        # the returned value is a LIST
+        first_row = {'class':'media-list'}
+        Second_row = {'class':'media-list media-list--fixed-height'}
+        Third_row = {'class':'media-list media-list--fixed-height'}
 
     def ParseJson(self):
         for Trend in self.trends:
