@@ -1,3 +1,4 @@
+# Some edits
 import json
 import threading
 
@@ -91,10 +92,8 @@ class SkyNews(RequestDispatcher):
 
 class RT_SearchEngine(RequestDispatcher):
     def __init__(self, query: str):
-        super().__init__()
         """
-
-        :type query: str
+        :type query: str: a keyword for search operation
 
         """
         self.Links = []

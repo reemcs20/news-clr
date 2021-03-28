@@ -8,8 +8,11 @@ class ResultsSearch:
 
 
 class EN_Alarbya(RequestDispatcher, ResultsSearch):
+    """
+    a class to scrape the trends from Alarapyia site.
+    """
     def __init__(self):
-        self.Target: str = "https://english.alarabiya.net/"
+        self.Target: str = "https://english.alarabiya.net/News"
         self.cookies: dict = {
             'cookie': """beraredirectar=beta-ar; _fbp=fb.1.1612444680560.1540103053; _pk_id.1.3db0=4108da13bdb477c1.1612467545.; _ga=GA1.3.660409616.1612444680; __atuvc=5|5; _ga=GA1.1.660409616.1612444680; beraredirecten=beta-en; aaconsent=aaconsent; YPF8827340282Jdskjhfiw_928937459182JAX666=193.35.20.93; NEW_VISITOR=new; VISITOR=returning; _pk_ref.1.3db0=["","",1616943849,"https://www.alarabiya.net/"]; _pk_ses.1.3db0=1; AMP_TOKEN=$NOT_FOUND; _gid=GA1.3.1398592103.1616943851; _dc_gtm_UA-463820-31=1; _ga_576H90FZVV=GS1.1.1616943849.15.0.1616943849.60; JSESSIONID=2357072FF0744AE1F120A865E4FB9D4B"""}
         self.RequestText: str = self.MakeRequest(self.Target, headers=self.cookies)  # A HTTP Request to Alarbya site
@@ -52,7 +55,7 @@ class BBC_Trends(RequestDispatcher, ResultsSearch):
 
     def __init__(self):
         self.TrendURL: str = 'https://www.bbc.com/arabic/mostread.json'
-        self.trends: dict = self.MakeRequest(target=self.TrendURL, json=True).get('records')
+        self.trends: dict = self.MakeRequest(target=self.TrendURL, json=True)
 
     def formURL(self, url: str):
         """
@@ -62,11 +65,8 @@ class BBC_Trends(RequestDispatcher, ResultsSearch):
         return 'https://www.bbc.com' + url
 
     def ParseJson(self):
-        for Trend in self.trends:
+        for Trend in self.trends.get('records'):
             title = Trend.get('promo').get('headlines').get('headline')
             link = Trend.get('promo').get('locators').get('assetUri')
             self.AllTrends.get('bbc').append(dict(title=title, link=self.formURL(url=link)))
 
-
-temp = EN_Alarbya()
-temp.RefineData()

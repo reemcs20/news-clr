@@ -11,6 +11,7 @@ class AppConfigurations:
 
     @staticmethod
     def Error_Register(data):
+        " save all errors into text file"
         try:
             with open('error_log', '+a') as f:
                 f.writelines(data + '\n')
@@ -22,7 +23,7 @@ class AppConfigurations:
         if self.Env == 'linux':
             # checks path if exists or not and create it
             if not os.path.exists("/root/NewsCrawlers/core/temp/"):
-                os.makedirs("/root/NewsCrawlers/core/temp/")
+                os.makedirs("/root/NewsCrawlers/core/temp/") # Create new folder
                 return r"/root/NewsCrawlers/core/temp/"
             else:
 
