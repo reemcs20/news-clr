@@ -8,7 +8,7 @@ import threading
 class ResultsSearch:
     def __init__(self, language: str = 'ar'):
         if language == 'ar':
-            self.AllTrends = {'aljazeera': [], 'bbc': []}
+            self.AllTrends = {'arTrends': []}
         else:
             self.AllTrends = {'enTrends': []}
 
@@ -84,11 +84,11 @@ class AJ_Trends(RequestDispatcher, ResultsSearch):
         for headTrend in headingTrends:
             news_title = headTrend.text
             news_link = 'https://www.aljazeera.net' + headTrend.get_attribute_list('href')[0]
-            self.AllTrends.get('aljazeera').append(dict(title=news_title, link=news_link))
+            self.AllTrends.get('arTrends').append(dict(title=news_title, link=news_link))
         for Vertical_news in Vertical_header:
             news_title = Vertical_news.a.text
             news_link = 'https://www.aljazeera.net' + Vertical_news.a.get_attribute_list('href')[0]
-            self.AllTrends.get('aljazeera').append(dict(title=news_title, link=news_link))
+            self.AllTrends.get('arTrends').append(dict(title=news_title, link=news_link))
 
 
 class BBC_Trends(RequestDispatcher, ResultsSearch):
@@ -111,4 +111,4 @@ class BBC_Trends(RequestDispatcher, ResultsSearch):
         for Trend in self.trends.get('records'):
             title = Trend.get('promo').get('headlines').get('headline')
             link = Trend.get('promo').get('locators').get('assetUri')
-            self.AllTrends.get('bbc').append(dict(title=title, link=self.formURL(url=link)))
+            self.AllTrends.get('arTrends').append(dict(title=title, link=self.formURL(url=link)))
