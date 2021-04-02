@@ -18,9 +18,7 @@ else:
 
 def PrintJson():
     if args_parser.p:
-        for news in t.AllTrends.get("bbc"):
-            print(news.get("title"))
-        for news in t.AllTrends.get("aljazeera"):
+        for news in t.AllTrends.get("arTrends"):
             print(news.get("title"))
     if args_parser.l == 'ar':
         print(json.dumps(t.AllTrends, indent=3, sort_keys=True))

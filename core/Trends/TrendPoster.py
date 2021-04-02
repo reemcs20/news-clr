@@ -74,6 +74,7 @@ class AJ_Trends(RequestDispatcher, ResultsSearch):
     """A class to scrape Trends from Aljazeera Platform"""
 
     def __init__(self):
+        super().__init__(language='ar')
         self.TrendURL = 'https://www.aljazeera.net'
         self.trendsData = self.MakeRequest(target=self.TrendURL, json=False)
 
@@ -97,6 +98,7 @@ class BBC_Trends(RequestDispatcher, ResultsSearch):
     """
 
     def __init__(self):
+        super().__init__(language='ar')
         self.TrendURL: str = 'https://www.bbc.com/arabic/mostread.json'
         self.trends: dict = self.MakeRequest(target=self.TrendURL, json=True)
 
