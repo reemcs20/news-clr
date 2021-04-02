@@ -60,7 +60,7 @@ class EN_Alarbya(RequestDispatcher, ResultsSearch):
                 self.AllTrends.get("enTrends").append(dict(title=str(trend.text).replace('  ', '').strip().strip('\n'),
                                                            link='https://english.alarabiya.net/News'))
 
-    def GetTrends(self):
+    def GetTrends(self) -> dict:
         thread1 = threading.Thread(target=self.RefineDataHeaderTrend)
         thread2 = threading.Thread(target=self.RefineDataMiddleTrends)
         thread1.start()

@@ -25,7 +25,11 @@ def PrintJson():
         else:
             print(json.dumps(t.AllTrends, indent=3, sort_keys=True))
     else:
-        print(json.dumps(en_trends.GetTrends(), indent=4, sort_keys=True))
+        if args_parser.p:
+            for news in en_trends.GetTrends():
+                print(news.get('title'))
+        else:
+            print(json.dumps(en_trends.GetTrends(), indent=4, sort_keys=True))
 
 
 PrintJson()
