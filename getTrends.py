@@ -7,7 +7,7 @@ args = argparse.ArgumentParser()
 args.add_argument('-p', default=None, help="Prettify JSON", type=str, required=False)
 args.add_argument('-l', default='ar', help="Trends Language", type=str, required=False)
 args_parser = args.parse_args()
-if argparse.l == 'ar':
+if args_parser.l == 'ar':
     t = BBC_Trends()
     j = AJ_Trends()
     j.ExtractNews()
