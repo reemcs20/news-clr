@@ -27,7 +27,10 @@ class Searcher:
     #     """method to perform a search operation and returns a list of links"""
     #     try:
     #         links = []  # a list to store links from google
-    #         results = search(query=query, num=5, stop=10, tld=tld)
+    #         re
+    #         s
+    
+    #         ults = search(query=query, num=5, stop=10, tld=tld)
     #         for link in results:
     #             links.append(link)  # add links to list
     #         return links
