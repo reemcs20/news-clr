@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from core.Trends.TrendPoster import AJ_Trends, BBC_Trends,EN_Alarbya
+from core.Trends.TrendPoster import AJ_Trends, BBC_Trends, EN_Alarbya
 
 args = argparse.ArgumentParser()
 args.add_argument('-p', default=None, help="Prettify JSON", type=str, required=False)
@@ -15,17 +15,17 @@ if args_parser.l == 'ar':
 else:
     en_trends = EN_Alarbya()
 
+
 def PrintJson():
     if args_parser.p:
         for news in t.AllTrends.get("bbc"):
             print(news.get("title"))
         for news in t.AllTrends.get("aljazeera"):
             print(news.get("title"))
+    if args_parser.l == 'ar':
+        print(json.dumps(t.AllTrends, indent=3, sort_keys=True))
     else:
-        if args_parser.l == 'ar':
-            print(json.dumps(t.AllTrends, indent=3, sort_keys=True))
-        else:
-            print(en_trends.GetTrends())
+        print(json.dumps(en_trends.GetTrends(),indent=4,sort_keys=True))
 
 
 PrintJson()
