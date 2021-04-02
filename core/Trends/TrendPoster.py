@@ -112,9 +112,3 @@ class BBC_Trends(RequestDispatcher, ResultsSearch):
             title = Trend.get('promo').get('headlines').get('headline')
             link = Trend.get('promo').get('locators').get('assetUri')
             self.AllTrends.get('bbc').append(dict(title=title, link=self.formURL(url=link)))
-
-
-temp = EN_Alarbya()
-temp.RefineDataHeaderTrend()
-temp.RefineDataMiddleTrends()
-print(temp.AllTrends)
