@@ -17,11 +17,13 @@ else:
 
 
 def PrintJson():
-    if args_parser.p:
-        for news in t.AllTrends.get("arTrends"):
-            print(news.get("title"))
+
     if args_parser.l == 'ar':
-        print(json.dumps(t.AllTrends, indent=3, sort_keys=True))
+        if args_parser.p:
+            for news in t.AllTrends.get("arTrends"):
+                print(news.get("title"))
+        else:
+            print(json.dumps(t.AllTrends, indent=3, sort_keys=True))
     else:
         print(json.dumps(en_trends.GetTrends(), indent=4, sort_keys=True))
 
