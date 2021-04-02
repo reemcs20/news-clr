@@ -40,8 +40,8 @@ class EN_Alarbya(RequestDispatcher, ResultsSearch):
             if trend.get_attribute_list('href')[0].startswith('/News/') and trend.get_attribute_list('href')[
                 0].__len__() > 50:
 
-                print(trend.get_attribute_list('title')[0])
-                print(self.Combine_URL(trend.get_attribute_list('href')[0]))
+                # print(trend.get_attribute_list('title')[0])
+                # print(self.Combine_URL(trend.get_attribute_list('href')[0]))
                 if trend.get_attribute_list('title')[0] and trend.get_attribute_list('href')[0]:
                     self.AllTrends.get('enTrends').append(dict(title=trend.get_attribute_list('title')[0],
                                                                link=self.Combine_URL(
@@ -53,10 +53,10 @@ class EN_Alarbya(RequestDispatcher, ResultsSearch):
                 news = str(trend.text).split("""
                                     
                                 """)[1].strip()
-                print(news)
+                # print(news)
                 self.AllTrends.get("enTrends").append(dict(title=news, link='https://english.alarabiya.net/News'))
             else:
-                print(str(trend.text).replace('  ', '').strip().strip('\n'))
+                # print(str(trend.text).replace('  ', '').strip().strip('\n'))
                 self.AllTrends.get("enTrends").append(dict(title=str(trend.text).replace('  ', '').strip().strip('\n'),
                                                            link='https://english.alarabiya.net/News'))
 
