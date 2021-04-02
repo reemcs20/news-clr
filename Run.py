@@ -7,8 +7,9 @@ from core.ext.Utiltiy import EchoResult
 
 start_time = time.time()  # time the execution flow
 args = argparse.ArgumentParser()
-args.add_argument('-q', help="a query for searching it", type=str, required=False)
-args.add_argument('-l', help="Language of search options", type=str, required=False)
+args.add_argument('-q', help="a query for searching it", type=str, required=True)
+args.add_argument('-l', help="Language of search options", type=str, required=True)
+
 args_parser = args.parse_args()
 query: str = args_parser.q
 language: str = args_parser.l
