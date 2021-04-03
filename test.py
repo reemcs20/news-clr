@@ -1,27 +1,51 @@
-# import requests
-# import json
-# query = 'Iran'
-# headers = {
-#     'Host': 'www.aljazeera.net',
-#     "Accept-Encoding":'gzip, deflate, br',
-#     "Accept-Language": "en-US,en;q=0.5",
-#     "Connection":'keep-alive',
-#     "If-None-Match": """W/"e0-c53f7wDo53oXBizh9J4Kc52/FPs""",
-# 
-#     'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-#                  'Chrome/88.0.4324.146 Safari/537.36',
-#     'content-type': 'application/json',
-#     'accept': '*/*',
-#     "wp-site":"aje",
-#     "X-KL-Ajax-Request": "Ajax_Request",
-#     'original-domain': 'www.aljazeera.net',
-#     'Referer': f'https://www.aljazeera.net/search/{query}',
-# 
-# }
-# Search_data = dict(query='ايران', start=1, sort="relevance")
-# req = requests.get('https://www.aljazeera.net/graphql?wp-site=aje&operationName=SearchQuery&variables={}&extensions={}'.format(json.dumps(Search_data),''),headers=headers)
-# print(req.text)
-# print(req.status_code)
+from aiohttp import ClientSession
 
-import socket
-print(socket.gethostname())
+import asyncio
+import requests
+import time
+
+results = []
+
+
+async def print_info():
+    while True:
+        print("Function one say hi")
+        await asyncio.sleep(2)
+
+
+async def print_info2():
+    while True:
+        print("Function Two say hi")
+        await asyncio.sleep(1)
+
+loop = asyncio.get_event_loop()
+
+loop.create_task(print_info())
+loop.create_task(print_info2())
+loop.run_forever()
+# async def fetch(url, session: ClientSession, page_number):
+#     headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0',
+#                "Referer": "Referer: https://www.dnb.com/business-directory/company-search.html?term=wool&page={}".format(
+#                    page_number),
+#                "Cookie": cookie}
+#     async with session.get(url, headers=headers) as response:
+#         json_response = await response.read()
+#         results.append(json_response.decode())
+#         return json_response
+#
+#
+# async def main():
+#     tasks = []
+#     async with ClientSession() as session:
+#         for page_number in range(30):
+#             url = "https://www.dnb.com/apps/dnb/thirdparty/dnbdirectutil?limited=false&returnNav=true&captchaDone=true&pageSize=25&pageNumber={}&criteriasearch=true&searchTerm=wool".format(
+#                 page_number)
+#             tasks.append(asyncio.create_task(fetch(url, session, page_number)))
+#         response = await asyncio.gather(*tasks)
+#         return response
+#
+#
+# loop = asyncio.get_event_loop()
+#
+# loop.run_until_complete(main())
+# print(results)

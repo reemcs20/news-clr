@@ -24,7 +24,7 @@ class FindData(RequestDispatcher):
                 tags_container.append(tag.text.strip())
             return tags_container
         except BaseException as e:
-            print("Russia Today", e)
+            config.debug(level=1, data=e)
 
     def extractData(self, link: str) -> tuple:
         """method to extract title and tag"""
@@ -73,5 +73,5 @@ class FindData(RequestDispatcher):
             for thread_join in threads:
                 thread_join.join()
         except BaseException as e:
-            print(e)
+            config.debug(level=1, data=e)
         write_json(config.EnvironmentPath(), 'rt', self.Results)
