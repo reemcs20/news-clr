@@ -137,7 +137,6 @@ class RT_SearchEngine(RequestDispatcher):
         soup = BeautifulSoup(self.getSourcePage(language='ar'), 'html.parser')
         news = soup.findAll('a', {'class': 'list-search_media'})
         for link in news:
-            print('https://arabic.rt.com' + link.get_attribute_list('href')[0])
             links.append('https://arabic.rt.com' + link.get_attribute_list('href')[0])
         self.Links.extend(links)
         if len(self.Links) > 1:
