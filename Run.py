@@ -67,7 +67,7 @@ if __name__ == '__main__':
         file_path = r'/var/www/html/public/temp'
         random_name = randint(100, 1000)
         write_json(path=file_path, name=random_name, data_file=resultsManager.AllNews)
-        print(os.path.join(file_path, str(random_name)))
+        print(os.path.join(file_path, str(random_name)+'.json'))
     if config.DEBUG:
         "Calculate how long did the program take"
         print("Done! Taken Time:", time.time() - start_time)
