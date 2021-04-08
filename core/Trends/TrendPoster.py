@@ -37,8 +37,7 @@ class EN_Alarbya(RequestDispatcher, ResultsSearch):
 
     def RefineDataMiddleTrends(self):
         for trend in self.MiddleTrends:
-            if trend.get_attribute_list('href')[0].startswith('/News/') and trend.get_attribute_list('href')[
-                0].__len__() > 50:
+            if trend.get_attribute_list('href')[0].startswith('/News/') and trend.get_attribute_list('href')[0].__len__() > 50:
 
                 # print(trend.get_attribute_list('title')[0])
                 # print(self.Combine_URL(trend.get_attribute_list('href')[0]))

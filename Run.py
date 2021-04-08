@@ -1,9 +1,11 @@
 import argparse
 import multiprocessing
+import os
 import sys
 import time
 from core.SearchEngine.Search import *
 from core.ext.Utiltiy import EchoResult
+from random import randint
 
 start_time = time.time()  # time the execution flow
 args = argparse.ArgumentParser()
@@ -62,7 +64,10 @@ if __name__ == '__main__':
         cnn_process.join()
         rt_process.join()
         resultsManager.ReadJson()
-        sys.stdout.write(str(resultsManager.AllNews))  # Print Result to terminal
+        file_path = r'/var/www/html/public/temp'
+        random_name = randint(100, 1000)
+        write_json(path=file_path, name=random_name, data_file=resultsManager.AllNews)
+        print(os.path.join(file_path, str(random_name)))
     if config.DEBUG:
         "Calculate how long did the program take"
         print("Done! Taken Time:", time.time() - start_time)
